@@ -54,22 +54,31 @@ if [ ! -f "$ROOT/assets/source/metta-logo-source.png" ]; then
   exit 1
 fi
 
+EXISTING_ISO=$(find "$ROOT/images" -name 'metta-os-*.iso' 2>/dev/null | head -1 || true)
+
 log "Generating assets (inside Docker)..."
-if [ "${METTA_SKIP_ASSETS:-0}" = "1" ]; then
-  log "Skipping generate-assets (METTA_SKIP_ASSETS=1)"
+if [ "${METTA_SKIP_ASSETS:-0}" = "1" ] && [ -n "$EXISTING_ISO" ] && [ -f "$EXISTING_ISO" ]; then
+  log "Skipping generate-assets (METTA_SKIP_ASSETS=1, ISO present)"
+elif [ "${METTA_SKIP_ASSETS:-0}" = "1" ]; then
+  log "WARN: METTA_SKIP_ASSETS=1 but no ISO — regenerating assets"
+  docker_run "./scripts/generate-assets.sh"
 else
   docker_run "./scripts/generate-assets.sh"
 fi
 
-ISO=$(find "$ROOT/images" -name 'metta-os-*.iso' 2>/dev/null | head -1 || true)
+ISO="$EXISTING_ISO"
 
-if [ "${METTA_SKIP_BUILD:-0}" = "1" ] && [ -n "$ISO" ] && [ -f "$ISO" ]; then
-  log "Skipping lb-build — reusing existing ISO: $ISO"
-else
-  if [ "${METTA_SKIP_BUILD:-0}" = "1" ]; then
-    log "ERROR: METTA_SKIP_BUILD=1 but no ISO in images/" >&2
-    exit 1
+reuse_iso=0
+if [ -n "$ISO" ] && [ -f "$ISO" ]; then
+  if [ "${METTA_SKIP_BUILD:-0}" = "1" ] || [ "${METTA_REUSE_ISO:-0}" = "1" ]; then
+    reuse_iso=1
   fi
+fi
+
+if [ "$reuse_iso" -eq 1 ]; then
+  log "Skipping lb-build — reusing existing ISO: $ISO"
+elif [ "${METTA_SKIP_BUILD:-0}" = "1" ] || [ "${METTA_REUSE_ISO:-0}" = "1" ]; then
+  log "WARN: reuse requested but no ISO in images/ — running full lb-build"
   log "Building live ISO (privileged)..."
   docker run --rm --privileged \
     --cap-add SYS_ADMIN \
@@ -77,7 +86,16 @@ else
     -w /build \
     "$DOCKER_IMAGE" \
     -c "./lb-build.sh --variant ${VARIANT} --verbose"
-
+  ISO=$(find "$ROOT/images" -name 'metta-os-*.iso' 2>/dev/null | head -1)
+  fix_workspace_perms
+else
+  log "Building live ISO (privileged)..."
+  docker run --rm --privileged \
+    --cap-add SYS_ADMIN \
+    -v "$ROOT:/build" \
+    -w /build \
+    "$DOCKER_IMAGE" \
+    -c "./lb-build.sh --variant ${VARIANT} --verbose"
   ISO=$(find "$ROOT/images" -name 'metta-os-*.iso' 2>/dev/null | head -1)
   fix_workspace_perms
 fi
