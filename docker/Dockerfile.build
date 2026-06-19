@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl gnupg wget git \
-    live-build cdebootstrap debootstrap devscripts \
+    cdebootstrap debootstrap devscripts \
     qemu-system-x86 ovmf \
     python3 python3-pillow \
     imagemagick librsvg2-bin \
@@ -12,16 +12,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo \
     && rm -rf /var/lib/apt/lists/*
 
-# Kali archive keyring and patched live-build
+# Kali archive keyring (required before using kali-rolling apt source)
 RUN curl -fsSL -o /tmp/kali-archive-keyring.deb \
-      http://http.kali.org/kali/pool/main/k/kali-archive-keyring/kali-archive-keyring_2025.1_all.deb \
+      http://http.kali.org/kali/pool/main/k/kali-archive-keyring/kali-archive-keyring_2025.2_all.deb \
     && dpkg -i /tmp/kali-archive-keyring.deb \
     && rm /tmp/kali-archive-keyring.deb
 
-RUN curl -fsSL -o /tmp/live-build.deb \
-      "http://http.kali.org/kali/pool/main/l/live-build/live-build_1%3a20250814%2bkali2_all.deb" \
-    && apt-get install -y /tmp/live-build.deb \
-    && rm /tmp/live-build.deb
+# Kali-patched live-build (>= 1:20250814+kali2 required by lb-build.sh)
+RUN echo "deb http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware" \
+      > /etc/apt/sources.list.d/kali.list \
+    && apt-get update \
+    && apt-get install -y -t kali-rolling live-build \
+    && rm -rf /var/lib/apt/lists/*
 
 # debian-cd symlink required by live-build for kali-rolling
 RUN ln -sf sid /usr/share/live/build/data/debian-cd/kali-rolling 2>/dev/null || true
