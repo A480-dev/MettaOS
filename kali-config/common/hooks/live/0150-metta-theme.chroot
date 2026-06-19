@@ -1,28 +1,15 @@
 #!/bin/sh
 set -e
 
-# Apply METTA OS theme defaults system-wide for live image
 if command -v update-alternatives >/dev/null 2>&1; then
   update-alternatives --set x-cursor-theme default 2>/dev/null || true
 fi
 
-# Copy skel to root for live user preview
 if [ -d /etc/skel/.config ]; then
   mkdir -p /root/.config
   cp -a /etc/skel/.config/. /root/.config/ 2>/dev/null || true
 fi
 
-# Set xfwm4 theme for default session
-if [ -d /usr/share/themes/Metta-Dark ]; then
-  mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml
-  cat > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml << 'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<channel name="xsettings" version="1.0">
-  <property name="Net" type="empty">
-    <property name="ThemeName" type="string" value="Metta-Dark"/>
-    <property name="IconThemeName" type="string" value="Papirus-Dark"/>
-    <property name="FontName" type="string" value="Inter 10"/>
-  </property>
-</channel>
-EOF
+if [ -x /usr/lib/metta/install-xfce-defaults.sh ]; then
+  /usr/lib/metta/install-xfce-defaults.sh
 fi

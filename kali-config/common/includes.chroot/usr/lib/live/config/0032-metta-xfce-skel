@@ -1,0 +1,42 @@
+#!/bin/sh
+# Ensure live user inherits METTA Xfce defaults from skel.
+
+. /usr/lib/live/config.sh
+
+Init() {
+  if component_was_executed "metta-xfce-skel"; then
+    exit 0
+  fi
+  echo -n " metta-xfce-skel"
+}
+
+Config() {
+  user="${LIVE_USERNAME:-metta}"
+  home="$(getent passwd "$user" 2>/dev/null | cut -d: -f6)"
+  [ -n "$home" ] || exit 0
+
+  if [ -d /etc/skel/.config ]; then
+    mkdir -p "$home/.config"
+    cp -a /etc/skel/.config/. "$home/.config/" 2>/dev/null || true
+  fi
+
+  xfconf_dir="$home/.config/xfce4/xfconf/xfce-perchannel-xml"
+  skel_xfconf="/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml"
+  if [ -d "$skel_xfconf" ]; then
+    mkdir -p "$xfconf_dir"
+    for f in xsettings.xml xfwm4.xml xfce4-desktop.xml xfce4-panel.xml; do
+      [ -f "$skel_xfconf/$f" ] && cp -f "$skel_xfconf/$f" "$xfconf_dir/$f"
+    done
+  fi
+
+  if [ -f /etc/skel/.config/gtk-3.0/settings.ini ]; then
+    mkdir -p "$home/.config/gtk-3.0"
+    cp -f /etc/skel/.config/gtk-3.0/settings.ini "$home/.config/gtk-3.0/settings.ini"
+  fi
+
+  chown -R "$user:$user" "$home/.config" 2>/dev/null || true
+  touch /var/lib/live/config/metta-xfce-skel
+}
+
+Init
+Config

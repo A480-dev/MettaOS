@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA OS Xfce Setup (delayed)
+Comment=Re-apply METTA OS wallpaper after Xfce finishes monitor detection
+Exec=/bin/sh -c 'sleep 5; /usr/lib/metta/xfce-live-setup.sh'
+OnlyShowIn=XFCE;
+X-Xfce-NoDesktop=true
+NoDisplay=true
+StartupNotify=false

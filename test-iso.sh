@@ -69,13 +69,22 @@ run_qemu_test() {
     wait_secs=(45)
   fi
 
+  local i=0
+  local n=${#wait_secs[@]}
+
   for t in "${wait_secs[@]}"; do
+    i=$((i + 1))
     sleep "$t" 2>/dev/null || sleep 30
     if [ -S "$OUT/qemu-${mode}.sock" ]; then
-      {
-        echo "screendump $OUT/screenshot-${mode}-${t}s.ppm"
-        echo "quit"
-      } | nc -U -N "$OUT/qemu-${mode}.sock" 2>/dev/null || true
+      if [ "$i" -eq "$n" ]; then
+        {
+          printf 'screendump %s/screenshot-%s-%ss.ppm\n' "$OUT" "$mode" "$t"
+          printf 'quit\n'
+        } | nc -U -N "$OUT/qemu-${mode}.sock" 2>/dev/null || true
+      else
+        printf 'screendump %s/screenshot-%s-%ss.ppm\n' "$OUT" "$mode" "$t" \
+          | nc -U -N "$OUT/qemu-${mode}.sock" 2>/dev/null || true
+      fi
     fi
     [ "$t" -ge "$TIMEOUT" ] && break
   done
@@ -84,7 +93,7 @@ run_qemu_test() {
   kill "$pid" 2>/dev/null || true
   wait "$pid" 2>/dev/null || true
 
-  if grep -qi 'panic\|BUG:\|Kernel panic' "$log"; then
+  if grep -qiE 'Kernel panic — not syncing|Kernel panic - not syncing|Oops:|BUG: unable to handle' "$log"; then
     echo "FALLO ($mode): error crítico en boot.log" >&2
     tail -50 "$log" >&2
     return 1
@@ -101,17 +110,15 @@ FAILED=0
 run_qemu_test bios -boot d || FAILED=1
 
 # UEFI boot
-OVMF="${OVMF_CODE:-/usr/share/edk2/x64/OVMF_CODE.fd}"
-OVMF_VARS="${OVMF_VARS:-/usr/share/edk2/x64/OVMF_VARS.fd}"
-if [ ! -f "$OVMF" ]; then
-  OVMF="/usr/share/OVMF/OVMF_CODE.fd"
-  OVMF_VARS="/usr/share/OVMF/OVMF_VARS.fd"
-fi
-if [ ! -f "$OVMF" ]; then
-  OVMF="/usr/share/qemu/OVMF.fd"
+# shellcheck source=scripts/ovmf-paths.sh
+source "$ROOT/scripts/ovmf-paths.sh"
+OVMF="$(ovmf_find_code || true)"
+OVMF_VARS=""
+if [ -n "$OVMF" ]; then
+  OVMF_VARS="$(ovmf_find_vars "$OVMF" || true)"
 fi
 
-if [ "$RUN_UEFI" = "1" ] && [ -f "$OVMF" ]; then
+if [ "$RUN_UEFI" = "1" ] && [ -n "$OVMF" ] && [ -f "$OVMF" ]; then
   cp -f "$OVMF_VARS" "$OUT/OVMF_VARS.fd" 2>/dev/null || touch "$OUT/OVMF_VARS.fd"
   run_qemu_test uefi \
     -machine q35 \

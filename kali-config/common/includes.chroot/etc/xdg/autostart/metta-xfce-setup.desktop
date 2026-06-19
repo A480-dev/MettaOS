@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA OS Xfce Setup
+Comment=Apply METTA OS wallpaper and theme on live session start
+Exec=/usr/lib/metta/xfce-live-setup.sh
+OnlyShowIn=XFCE;
+X-Xfce-NoDesktop=true
+NoDisplay=true
+StartupNotify=false

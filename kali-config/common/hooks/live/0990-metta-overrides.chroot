@@ -51,6 +51,11 @@ for f in /etc/gtk-2.0/gtkrc \
   [ -f "$f" ] && sed -i 's/Kali-Dark/Metta-Dark/g; s/Kali-Light/Metta-Dark/g' "$f" || true
 done
 
+# Late pass: kali-themes may have re-run diversions — re-apply METTA Xfce defaults
+if [ -x /usr/lib/metta/install-xfce-defaults.sh ]; then
+  /usr/lib/metta/install-xfce-defaults.sh
+fi
+
 [ -f /etc/xdg/kcm-about-distrorc ] && \
   sed -i 's/emblem-kali/mettaos/g' /etc/xdg/kcm-about-distrorc || true
 

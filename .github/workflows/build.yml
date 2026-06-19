@@ -22,7 +22,7 @@ on:
         default: true
         type: boolean
       skip_build:
-        description: 'Try to reuse cached ISO; if missing, runs full build automatically'
+        description: 'Reuse ISO only if cache fingerprint matches; otherwise full build'
         required: true
         default: false
         type: boolean
@@ -116,10 +116,17 @@ jobs:
         id: iso-cache
         uses: actions/cache@v4
         with:
-          path: images
+          path: |
+            images
           key: metta-iso-${{ steps.cfg.outputs.variant }}-${{ steps.isokey.outputs.hash }}
           restore-keys: |
             metta-iso-${{ steps.cfg.outputs.variant }}-
+
+      - name: Discard partial ISO cache
+        if: steps.iso-cache.outputs.cache-hit != 'true'
+        run: |
+          rm -f images/metta-os-*.iso images/metta-os-*.iso.sha256 images/.metta-build-fingerprint
+          echo "Partial cache discarded — full build will run if needed"
 
       - name: CI build pipeline
         env:
@@ -128,7 +135,7 @@ jobs:
           METTA_TEST_TIMEOUT: '90'
           METTA_TEST_UEFI: '0'
           METTA_SKIP_BUILD: ${{ github.event.inputs.skip_build == 'true' && '1' || '0' }}
-          METTA_REUSE_ISO: ${{ steps.iso-cache.outputs.cache-hit == 'true' && '1' || '0' }}
+          METTA_REUSE_ISO: ${{ (steps.iso-cache.outputs.cache-hit == 'true' || github.event.inputs.skip_build == 'true') && '1' || '0' }}
           METTA_SKIP_ASSETS: ${{ steps.iso-cache.outputs.cache-hit == 'true' && '1' || '0' }}
           METTA_SKIP_CHROOT_VERIFY: ${{ (steps.iso-cache.outputs.cache-hit == 'true' || github.event.inputs.skip_build == 'true') && '1' || '0' }}
         run: |
@@ -136,14 +143,14 @@ jobs:
           ./scripts/ci-build.sh
 
       - name: Save ISO cache
-        if: always() && steps.iso-cache.outputs.cache-hit != 'true'
+        if: success() && steps.iso-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: images
           key: metta-iso-${{ steps.cfg.outputs.variant }}-${{ steps.isokey.outputs.hash }}
 
       - name: Upload ISO artifact
-        if: always()
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.cfg.outputs.artifact }}
