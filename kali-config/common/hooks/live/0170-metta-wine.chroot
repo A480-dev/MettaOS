@@ -1,0 +1,29 @@
+#!/bin/sh
+# winetricks was removed from kali-rolling (2026-03) — install upstream script.
+set -e
+
+if command -v winetricks >/dev/null 2>&1; then
+  exit 0
+fi
+
+WINETRICKS_URL="https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks"
+TMP="/tmp/winetricks.install"
+
+if command -v wget >/dev/null 2>&1; then
+  wget -q -O "$TMP" "$WINETRICKS_URL"
+elif command -v curl >/dev/null 2>&1; then
+  curl -fsSL -o "$TMP" "$WINETRICKS_URL"
+else
+  echo "WARN: wget/curl missing — winetricks not installed" >&2
+  exit 0
+fi
+
+install -m 755 "$TMP" /usr/local/bin/winetricks
+rm -f "$TMP"
+
+# Winetricks runtime helpers
+for pkg in cabextract p7zip-full zenity; do
+  apt-get install -y --no-install-recommends "$pkg" 2>/dev/null || true
+done
+
+echo "Installed winetricks → /usr/local/bin/winetricks"

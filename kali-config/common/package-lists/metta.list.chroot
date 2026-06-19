@@ -11,11 +11,12 @@ kitty
 conky-all
 xbindkeys
 wine
-winetricks
-bottles
+cabextract
+p7zip-full
+zenity
 squashfs-tools
 nmap
-wireguard
+wireguard-tools
 openvpn
 tor
 proxychains4
@@ -32,3 +33,7 @@ network-manager
 network-manager-gnome
 ufw
 dunst
+
+## Removed from Kali rolling (2026-03): winetricks, bottles
+## → winetricks: hook 0170-metta-wine.chroot (upstream script)
+## → bottles: replaced by metta-converter + wine
