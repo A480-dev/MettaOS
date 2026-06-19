@@ -20,6 +20,14 @@ docker_run() {
     -c "$*"
 }
 
+# lb-build and QEMU run as root in Docker — restore ownership for the CI runner
+fix_workspace_perms() {
+  docker run --rm \
+    -v "$ROOT:/build" \
+    "$DOCKER_IMAGE" \
+    -c "chown -R $(id -u):$(id -g) /build/images /build/chroot /build/test-output 2>/dev/null || true"
+}
+
 if ! docker image inspect "$DOCKER_IMAGE" >/dev/null 2>&1; then
   log "Building Docker image..."
   DOCKERFILE_HASH="$(sha256sum docker/Dockerfile.build | awk '{print $1}')"
@@ -47,29 +55,49 @@ if [ ! -f "$ROOT/assets/source/metta-logo-source.png" ]; then
 fi
 
 log "Generating assets (inside Docker)..."
-docker_run "./scripts/generate-assets.sh"
+if [ "${METTA_SKIP_ASSETS:-0}" = "1" ]; then
+  log "Skipping generate-assets (METTA_SKIP_ASSETS=1)"
+else
+  docker_run "./scripts/generate-assets.sh"
+fi
 
-log "Building live ISO (privileged)..."
-docker run --rm --privileged \
-  --cap-add SYS_ADMIN \
-  -v "$ROOT:/build" \
-  -w /build \
-  "$DOCKER_IMAGE" \
-  -c "./lb-build.sh --variant ${VARIANT} --verbose"
+ISO=$(find "$ROOT/images" -name 'metta-os-*.iso' 2>/dev/null | head -1 || true)
 
-ISO=$(find "$ROOT/images" -name 'metta-os-*.iso' 2>/dev/null | head -1)
+if [ "${METTA_SKIP_BUILD:-0}" = "1" ] && [ -n "$ISO" ] && [ -f "$ISO" ]; then
+  log "Skipping lb-build — reusing existing ISO: $ISO"
+else
+  if [ "${METTA_SKIP_BUILD:-0}" = "1" ]; then
+    log "ERROR: METTA_SKIP_BUILD=1 but no ISO in images/" >&2
+    exit 1
+  fi
+  log "Building live ISO (privileged)..."
+  docker run --rm --privileged \
+    --cap-add SYS_ADMIN \
+    -v "$ROOT:/build" \
+    -w /build \
+    "$DOCKER_IMAGE" \
+    -c "./lb-build.sh --variant ${VARIANT} --verbose"
+
+  ISO=$(find "$ROOT/images" -name 'metta-os-*.iso' 2>/dev/null | head -1)
+  fix_workspace_perms
+fi
+
 if [ -z "$ISO" ] || [ ! -f "$ISO" ]; then
   log "ERROR: ISO not found under images/"
   exit 1
 fi
 log "ISO: $ISO"
 
-log "Verifying branding on chroot..."
-docker run --rm --privileged \
-  -v "$ROOT:/build" \
-  -w /build \
-  "$DOCKER_IMAGE" \
-  -c "./scripts/verify-branding.sh chroot/"
+if [ -d "$ROOT/chroot" ] && [ "${METTA_SKIP_CHROOT_VERIFY:-0}" != "1" ]; then
+  log "Verifying branding on chroot..."
+  docker run --rm --privileged \
+    -v "$ROOT:/build" \
+    -w /build \
+    "$DOCKER_IMAGE" \
+    -c "./scripts/verify-branding.sh chroot/"
+else
+  log "Skipping chroot verify (no chroot/ or METTA_SKIP_CHROOT_VERIFY=1)"
+fi
 
 log "Verifying branding on ISO..."
 docker run --rm --privileged \
@@ -92,6 +120,7 @@ if [ "$RUN_TESTS" = "1" ]; then
 else
   log "Skipping QEMU tests (METTA_RUN_TESTS=0)"
 fi
+fix_workspace_perms
 
 log "Writing checksum..."
 sha256sum "$ISO" | tee "${ISO}.sha256"
