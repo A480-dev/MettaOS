@@ -47,7 +47,7 @@ METTA_VARIANT=xfce-light ./scripts/ci-build.sh
 
 ```bash
 sudo apt install git live-build cdebootstrap debootstrap curl \
-  qemu-system-x86 ovmf python3-pillow imagemagick librsvg2-bin
+  qemu-system-x86 ovmf python3-pillow python3-numpy imagemagick librsvg2-bin
 ```
 
 Instalar también `kali-archive-keyring` y `live-build` parcheado de Kali (ver [documentación oficial](https://www.kali.org/blog/build-kali-with-live-build-on-debian-based-systems/)).

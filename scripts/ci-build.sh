@@ -22,9 +22,23 @@ docker_run() {
 
 if ! docker image inspect "$DOCKER_IMAGE" >/dev/null 2>&1; then
   log "Building Docker image..."
-  docker build -t "$DOCKER_IMAGE" -f docker/Dockerfile.build docker/
+  DOCKERFILE_HASH="$(sha256sum docker/Dockerfile.build | awk '{print $1}')"
+  docker build \
+    --label "metta.dockerfile-hash=$DOCKERFILE_HASH" \
+    -t "$DOCKER_IMAGE" \
+    -f docker/Dockerfile.build docker/
 else
-  log "Using existing Docker image: $DOCKER_IMAGE"
+  DOCKERFILE_HASH="$(sha256sum docker/Dockerfile.build | awk '{print $1}')"
+  CACHED_HASH="$(docker inspect --format='{{index .Config.Labels "metta.dockerfile-hash"}}' "$DOCKER_IMAGE" 2>/dev/null || true)"
+  if [ "${METTA_REBUILD_DOCKER:-0}" = "1" ] || [ "$DOCKERFILE_HASH" != "$CACHED_HASH" ]; then
+    log "Dockerfile changed (or METTA_REBUILD_DOCKER=1) — rebuilding image..."
+    docker build \
+      --label "metta.dockerfile-hash=$DOCKERFILE_HASH" \
+      -t "$DOCKER_IMAGE" \
+      -f docker/Dockerfile.build docker/
+  else
+    log "Using existing Docker image: $DOCKER_IMAGE"
+  fi
 fi
 
 if [ ! -f "$ROOT/assets/source/metta-logo-source.png" ]; then

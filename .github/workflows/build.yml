@@ -91,7 +91,10 @@ jobs:
             docker load -i /tmp/metta-docker-cache/image.tar
           else
             echo "Building Docker image..."
-            docker build -t "$METTA_DOCKER_IMAGE" -f docker/Dockerfile.build docker/
+            docker build \
+              --label "metta.dockerfile-hash=$(sha256sum docker/Dockerfile.build | awk '{print $1}')" \
+              -t "$METTA_DOCKER_IMAGE" \
+              -f docker/Dockerfile.build docker/
             mkdir -p /tmp/metta-docker-cache
             docker save "$METTA_DOCKER_IMAGE" -o /tmp/metta-docker-cache/image.tar
           fi
