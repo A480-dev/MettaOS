@@ -28,5 +28,15 @@ kali-config/common/bootloaders/grub-pc/theme/select_*.png
 __pycache__/
 *.pyc
 
-## Generated wallpaper source copy
+## Generated assets (regenerate via scripts/generate-assets.sh)
+assets/branding/generated/
 assets/wallpaper/metta-matrix-default.png
+kali-config/common/includes.chroot/usr/share/metta/branding/png/
+kali-config/common/includes.chroot/usr/share/metta/branding/mono/
+kali-config/common/includes.chroot/usr/share/backgrounds/metta/*.png
+preview/assets/
+preview/grub-theme/
+
+## Reference source (keep in repo)
+!assets/source/metta-logo-source.png
+ChatGPT Image*.png

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>METTA OS — UI Preview (moderno)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --surface-base: #0a0e0c;
+      --surface-panel: #121815;
+      --surface-elevated: #1a2420;
+      --surface-overlay: rgba(18, 24, 21, 0.72);
+      --accent-primary: #2be383;
+      --accent-primary-dim: #1a8f52;
+      --accent-secondary: #3fd8e8;
+      --accent-tertiary: #b26cff;
+      --warning: #f2b33d;
+      --error: #ff5c72;
+      --text-primary: #eaf5ee;
+      --text-secondary: #8fa89a;
+      --text-disabled: #4d5a54;
+      --border-subtle: rgba(234, 245, 238, 0.08);
+      --radius: 8px;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --font-ui: "Inter", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+      /* Legacy (antes) */
+      --legacy-green: #00ff41;
+      --legacy-bg: #000000;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-ui);
+      background: #060908;
+      color: var(--text-primary);
+      padding: 32px;
+      line-height: 1.5;
+    }
+    h1 { font-size: 1.5rem; font-weight: 600; margin: 0 0 8px; }
+    h2 { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 16px; }
+    p.lead { color: var(--text-secondary); font-size: 0.9rem; max-width: 720px; margin: 0 0 32px; }
+    code { font-family: var(--font-mono); font-size: 0.85em; background: var(--surface-panel); padding: 2px 6px; border-radius: 4px; }
+    section { margin-bottom: 48px; }
+    .palette {
+      display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 32px;
+    }
+    .swatch {
+      width: 72px; text-align: center; font-size: 0.65rem; color: var(--text-secondary);
+    }
+    .swatch div { height: 40px; border-radius: var(--radius); margin-bottom: 4px; border: 1px solid var(--border-subtle); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .screen {
+      background: var(--surface-base);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      min-height: 260px;
+    }
+    .screen-header {
+      padding: 10px 16px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--surface-panel);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .screen-body { padding: 16px; position: relative; min-height: 220px; }
+
+    /* —— Compare antes / después —— */
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) { .compare { grid-template-columns: 1fr; } }
+    .compare-col h3 {
+      font-size: 0.85rem; font-weight: 600; margin: 0 0 12px;
+    }
+    .compare-col.legacy h3 { color: var(--legacy-green); }
+    .compare-col.modern h3 { color: var(--accent-primary); }
+    .mock-window {
+      border-radius: var(--radius);
+      overflow: hidden;
+      font-size: 0.75rem;
+    }
+    .mock-window.legacy {
+      background: var(--legacy-bg);
+      border: 1px solid var(--legacy-green);
+      font-family: var(--font-mono);
+      color: var(--legacy-green);
+    }
+    .mock-window.modern {
+      background: var(--surface-base);
+      box-shadow: var(--shadow);
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+    }
+    .mock-titlebar {
+      padding: 8px 12px;
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.7rem;
+    }
+    .mock-window.legacy .mock-titlebar {
+      background: #0a0c0a;
+      border-bottom: 1px solid var(--legacy-green);
+    }
+    .mock-window.modern .mock-titlebar {
+      background: var(--surface-panel);
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+    .mock-content { padding: 16px; }
+    .mock-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .mock-label { opacity: 0.85; }
+    .mock-window.legacy .mock-label { color: var(--legacy-green); }
+    .mock-window.modern .mock-label { color: var(--text-secondary); }
+    .mock-input {
+      padding: 6px 10px; border-radius: 0; font-size: 0.7rem; width: 140px;
+    }
+    .mock-window.legacy .mock-input {
+      background: #000; border: 1px solid #333; color: var(--legacy-green); font-family: inherit;
+    }
+    .mock-window.modern .mock-input {
+      background: var(--surface-panel); border: 1px solid var(--border-subtle);
+      color: var(--text-primary); border-radius: var(--radius); font-family: var(--font-ui);
+    }
+    .mock-window.modern .mock-input:focus { outline: 2px solid rgba(43,227,131,0.3); border-color: var(--accent-primary); }
+    .mock-btn {
+      padding: 6px 14px; font-size: 0.7rem; cursor: default; border-radius: 0;
+    }
+    .mock-window.legacy .mock-btn {
+      background: #1a3d1a; border: 1px solid var(--legacy-green); color: var(--legacy-green); font-family: inherit;
+    }
+    .mock-window.modern .mock-btn-primary {
+      background: var(--accent-primary); color: var(--surface-base); border: none;
+      border-radius: var(--radius); font-weight: 600;
+    }
+    .mock-window.modern .mock-btn-secondary {
+      background: var(--surface-elevated); color: var(--text-primary);
+      border: 1px solid var(--border-subtle); border-radius: var(--radius);
+    }
+    .mock-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 500;
+    }
+    .mock-window.modern .mock-badge { background: rgba(178,108,255,0.2); color: var(--accent-tertiary); }
+    .mock-link { color: var(--accent-secondary); text-decoration: none; }
+
+    /* Panel compare */
+    .mock-panel {
+      display: flex; align-items: center; padding: 0 12px; gap: 10px; font-size: 0.7rem; height: 36px;
+    }
+    .mock-panel.legacy {
+      background: rgba(0,0,0,0.95); border-bottom: 1px solid var(--legacy-green);
+      font-family: var(--font-mono); color: var(--legacy-green); height: 28px;
+    }
+    .mock-panel.modern {
+      background: var(--surface-overlay);
+      backdrop-filter: blur(16px);
+      color: var(--text-secondary);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    .mock-panel.modern .active { color: var(--accent-primary); font-weight: 500; }
+    .mock-panel.modern .time { margin-left: auto; color: var(--text-primary); }
+
+    /* Terminal compare */
+    .mock-term {
+      padding: 10px; font-size: 0.68rem; line-height: 1.6; border-radius: var(--radius);
+    }
+    .mock-term.legacy {
+      background: #000; border: 1px solid var(--legacy-green); color: var(--legacy-green);
+      font-family: var(--font-mono);
+    }
+    .mock-term.modern {
+      background: var(--surface-base); border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono); color: var(--accent-primary);
+    }
+    .mock-term.modern .prompt { color: var(--accent-secondary); }
+    .mock-term.modern .dim { color: var(--text-secondary); }
+
+    /* Boot screens */
+    .grub {
+      background: var(--surface-base) url("assets/metta-matrix-with-logo.png") center/cover;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+      min-height: 200px;
+    }
+    .grub-menu {
+      background: var(--surface-overlay);
+      backdrop-filter: blur(12px);
+      padding: 8px 0; min-width: 280px; border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .grub-item { padding: 10px 20px; color: var(--text-secondary); font-size: 0.8rem; }
+    .grub-item.sel {
+      background: rgba(43,227,131,0.15); color: var(--text-primary);
+      box-shadow: inset 3px 0 0 var(--accent-primary);
+    }
+    .plymouth {
+      background: var(--surface-base);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px;
+    }
+    .plymouth img { width: 96px; opacity: 0.92; animation: pulse 2.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:.82} 50%{opacity:1} }
+    .plymouth span { color: var(--text-secondary); font-size: 0.75rem; margin-top: 16px; }
+    .login {
+      background: var(--surface-base) url("assets/metta-matrix-default.png") center/cover;
+      display: flex; align-items: center; justify-content: center; min-height: 200px;
+    }
+    .login-box {
+      background: var(--surface-overlay);
+      backdrop-filter: blur(16px);
+      padding: 28px; text-align: center; min-width: 280px;
+      border-radius: 10px; box-shadow: var(--shadow);
+    }
+    .login-box img { max-width: 180px; margin-bottom: 16px; }
+    .login-box input {
+      width: 100%; background: var(--surface-panel); border: 1px solid var(--border-subtle);
+      color: var(--text-primary); padding: 10px 12px; margin: 6px 0;
+      border-radius: var(--radius); font-family: var(--font-ui); font-size: 0.8rem;
+    }
+    .login-box input:focus { border-color: var(--accent-primary); outline: none; }
+    .login-box button {
+      margin-top: 8px; background: var(--accent-primary); border: none;
+      color: var(--surface-base); padding: 10px 20px; border-radius: var(--radius);
+      font-family: var(--font-ui); font-weight: 600; font-size: 0.8rem; cursor: default;
+    }
+    .desktop-wrap {
+      background: var(--surface-base) url("assets/metta-matrix-with-logo.png") center/cover;
+      border-radius: var(--radius); overflow: hidden; min-height: 200px;
+      display: flex; flex-direction: column;
+    }
+    .desktop-area { flex: 1; min-height: 120px; }
+    .float-term {
+      position: absolute; bottom: 16px; left: 16px; width: 260px;
+    }
+  </style>
+</head>
+<body>
+  <h1>METTA OS — Preview UI moderna</h1>
+  <p class="lead">
+    Paleta ampliada (verde + cian + magenta sobre neutros oscuros), Inter en chrome de UI,
+    monoespaciada solo en terminal. Ejecuta <code>./scripts/generate-assets.sh</code> si faltan imágenes en <code>preview/assets/</code>.
+  </p>
+
+  <div class="palette">
+    <div class="swatch"><div style="background:#0A0E0C"></div>base</div>
+    <div class="swatch"><div style="background:#121815"></div>panel</div>
+    <div class="swatch"><div style="background:#1A2420"></div>elevated</div>
+    <div class="swatch"><div style="background:#2BE383"></div>primary</div>
+    <div class="swatch"><div style="background:#3FD8E8"></div>secondary</div>
+    <div class="swatch"><div style="background:#B26CFF"></div>tertiary</div>
+    <div class="swatch"><div style="background:#EAF5EE"></div>text</div>
+    <div class="swatch"><div style="background:#8FA89A"></div>muted</div>
+  </div>
+
+  <section>
+    <h2>Antes / después — componentes clave</h2>
+    <div class="compare">
+      <div class="compare-col legacy">
+        <h3>Antes (hacker 2000s)</h3>
+        <div class="mock-window legacy" style="margin-bottom:16px">
+          <div class="mock-titlebar">Configuración del sistema</div>
+          <div class="mock-content">
+            <div class="mock-row"><span class="mock-label">Idioma</span><input class="mock-input" value="es_419" readonly /></div>
+            <div class="mock-row"><span class="mock-label">Tema</span><input class="mock-input" value="Metta-Dark" readonly /></div>
+            <div class="mock-row"><button class="mock-btn">Aplicar</button></div>
+          </div>
+        </div>
+        <div class="mock-panel legacy" style="margin-bottom:16px;border-radius:0">
+          <span>☰</span><span>METTA OS</span><span style="margin-left:auto">19:14</span>
+        </div>
+        <div class="mock-term legacy">
+          $ neofetch<br/>
+          OS: METTA OS 1.0<br/>
+          Shell: bash
+        </div>
+      </div>
+      <div class="compare-col modern">
+        <h3>Después (dev tool moderna)</h3>
+        <div class="mock-window modern" style="margin-bottom:16px">
+          <div class="mock-titlebar">Configuración del sistema</div>
+          <div class="mock-content">
+            <div class="mock-row">
+              <span class="mock-label">Idioma</span>
+              <input class="mock-input" value="es_419" readonly />
+            </div>
+            <div class="mock-row">
+              <span class="mock-label">Tema</span>
+              <span><span class="mock-badge">Nuevo</span> Metta-Dark</span>
+            </div>
+            <div class="mock-row">
+              <span class="mock-label">Documentación</span>
+              <a class="mock-link" href="#">metta.os/docs</a>
+            </div>
+            <div class="mock-row" style="gap:8px">
+              <button class="mock-btn mock-btn-secondary">Cancelar</button>
+              <button class="mock-btn mock-btn-primary">Aplicar</button>
+            </div>
+          </div>
+        </div>
+        <div class="mock-panel modern" style="margin-bottom:16px;border-radius:var(--radius)">
+          <span class="active">☰</span><span class="active">METTA OS</span><span class="time">19:14</span>
+        </div>
+        <div class="mock-term modern">
+          <span class="prompt">abraham@metta</span><span class="dim">:~$</span> neofetch<br/>
+          <span class="dim">OS:</span> METTA OS 1.0<br/>
+          <span class="dim">Shell:</span> bash
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Boot y sesión</h2>
+    <div class="grid">
+      <div class="screen">
+        <div class="screen-header">GRUB (live ISO)</div>
+        <div class="screen-body grub">
+          <img src="assets/metta-icon-512.png" alt="METTA OS" width="56" onerror="this.style.display='none'" />
+          <div class="grub-menu">
+            <div class="grub-item sel">Live system (METTA OS)</div>
+            <div class="grub-item">Live system (fail-safe)</div>
+            <div class="grub-item">Forensic mode</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen">
+        <div class="screen-header">Plymouth</div>
+        <div class="screen-body plymouth">
+          <img src="assets/metta-icon-512.png" alt="logo" onerror="this.style.display='none'" />
+          <span>booting…</span>
+        </div>
+      </div>
+      <div class="screen">
+        <div class="screen-header">LightDM / Login</div>
+        <div class="screen-body login">
+          <div class="login-box">
+            <img src="assets/metta-full-2048.png" alt="METTAOS" onerror="this.src='assets/metta-icon-512.png'" />
+            <input type="text" value="kali" readonly />
+            <input type="password" value="••••" readonly />
+            <button>Iniciar sesión</button>
+          </div>
+        </div>
+      </div>
+      <div class="screen">
+        <div class="screen-header">Xfce Desktop</div>
+        <div class="screen-body" style="padding:0">
+          <div class="desktop-wrap">
+            <div class="mock-panel modern">
+              <span class="active">☰</span><span class="active">METTA OS</span><span class="time">19:14</span>
+            </div>
+            <div class="desktop-area"></div>
+          </div>
+          <div class="float-term">
+            <div class="mock-term modern">
+              <span class="prompt">abraham@metta</span><span class="dim">:~$</span> neofetch
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <channel name="xfce4-terminal" version="1.0">
   <property name="MiscFontName" type="string" value="JetBrains Mono 11"/>
-  <property name="ColorForeground" type="string" value="#00FF41"/>
-  <property name="ColorBackground" type="string" value="#0D0F0D"/>
-  <property name="ColorCursor" type="string" value="#00FFFF"/>
+  <property name="ColorForeground" type="string" value="#2BE383"/>
+  <property name="ColorBackground" type="string" value="#0A0E0C"/>
+  <property name="ColorCursor" type="string" value="#3FD8E8"/>
+  <property name="ColorPalette" type="string" value="#0A0E0C;#FF5C72;#2BE383;#F2B33D;#3FD8E8;#B26CFF;#3FD8E8;#EAF5EE;#4D5A54;#FF5C72;#2BE383;#F2B33D;#3FD8E8;#B26CFF;#3FD8E8;#EAF5EE"/>
   <property name="ScrollingOnOutput" type="bool" value="true"/>
 </channel>

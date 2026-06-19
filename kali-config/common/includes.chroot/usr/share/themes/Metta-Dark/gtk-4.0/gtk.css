@@ -1,26 +1,55 @@
 window {
-  background-color: #0D0F0D;
+  background-color: #0a0e0c;
 }
 
 button {
-  background-color: #1a1f1a;
-  border: 1px solid #00FF41;
+  background-color: #1a2420;
+  color: #eaf5ee;
+  border: 1px solid rgba(234, 245, 238, 0.08);
+  border-radius: 8px;
+  padding: 8px 16px;
 }
 
 button:hover {
-  border-color: #00FFFF;
+  background-color: #121815;
+}
+
+button:focus {
+  border-color: #2be383;
+}
+
+button.suggested-action {
+  background-color: #2be383;
+  color: #0a0e0c;
 }
 
 entry {
-  background-color: #0a0c0a;
-  border: 1px solid #333;
+  background-color: #121815;
+  color: #eaf5ee;
+  border: 1px solid rgba(234, 245, 238, 0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
 }
 
 entry:focus {
-  border-color: #00FF41;
+  border-color: #2be383;
 }
 
 headerbar {
-  background-color: #0a0c0a;
-  border-bottom: 1px solid #00FF41;
+  background-color: #121815;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+link {
+  color: #3fd8e8;
+}
+
+progressbar progress {
+  background-color: #2be383;
+}
+
+popover.menu popup {
+  background-color: #1a2420;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }

@@ -1,19 +1,22 @@
 # METTA OS Plymouth theme
 
-Window.SetBackgroundTopColor(0.0, 0.0, 0.0);
-Window.SetBackgroundBottomColor(0.05, 0.06, 0.05);
+Window.SetBackgroundTopColor(0.039, 0.055, 0.047);
+Window.SetBackgroundBottomColor(0.071, 0.094, 0.082);
 
-logo_image = Image.Text("METTA OS", 1.0, 1.0, 1.0);
-logo_sprite = Sprite(logo_image);
-logo_sprite.SetX(Window.GetWidth() / 2 - logo_image.GetWidth() / 2);
-logo_sprite.SetY(Window.GetHeight() / 2 - logo_image.GetHeight() / 2 - 30);
+logo.image = Image("logo.png");
+logo.sprite = Sprite(logo.image);
+logo.sprite.SetX(Window.GetWidth() / 2 - logo.image.GetWidth() / 2);
+logo.sprite.SetY(Window.GetHeight() / 2 - logo.image.GetHeight() / 2 - 40);
+logo.opacity = 0.92;
 
-progress_box.image = Image.Text("booting...", 0.0, 1.0, 0.25);
+progress_box.image = Image.Text("booting...", 0.55, 0.66, 0.60);
 progress_box.sprite = Sprite(progress_box.image);
 progress_box.sprite.SetX(Window.GetWidth() / 2 - progress_box.image.GetWidth() / 2);
-progress_box.sprite.SetY(Window.GetHeight() / 2 + 20);
+progress_box.sprite.SetY(Window.GetHeight() / 2 + logo.image.GetHeight() / 2 + 16);
 
 fun progress_callback(duration, progress) {
+    pulse = 0.88 + 0.12 * Math.sin(progress * 40);
+    logo.sprite.SetOpacity(pulse);
     if (progress > 0.01) {
         progress_box.sprite.SetOpacity(1);
     }

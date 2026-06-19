@@ -4,6 +4,6 @@ Type=Application
 Name=METTA OS
 Comment=Sistema operativo METTA OS
 Exec=xfce4-about
-Icon=/usr/share/metta/branding/metta-logo-256.png
+Icon=/usr/share/icons/metta/256x256/apps/mettaos.png
 Terminal=false
 Categories=System;

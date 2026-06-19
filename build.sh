@@ -25,14 +25,18 @@ detect_docker() {
 echo "== METTA OS build pipeline =="
 
 echo "[1/5] Generating assets..."
-"$ROOT/scripts/generate-assets.sh"
-
-echo "[2/5] Building ISO..."
 if detect_docker; then
   if ! docker image inspect "$DOCKER_IMAGE" >/dev/null 2>&1; then
     echo "Building Docker image $DOCKER_IMAGE..."
     docker build -t "$DOCKER_IMAGE" -f "$ROOT/docker/Dockerfile.build" "$ROOT/docker"
   fi
+  docker run --rm -v "$ROOT:/build" -w /build "$DOCKER_IMAGE" -c "./scripts/generate-assets.sh"
+else
+  "$ROOT/scripts/generate-assets.sh"
+fi
+
+echo "[2/5] Building ISO..."
+if detect_docker; then
   docker run --rm --privileged \
     -v "$ROOT:/build" \
     -w /build \

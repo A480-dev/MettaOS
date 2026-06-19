@@ -1,0 +1,24 @@
+/**
+ * METTA OS design tokens (reference — imported by Metta-Dark gtk.css)
+ */
+:root {
+  --surface-base: #0a0e0c;
+  --surface-panel: #121815;
+  --surface-elevated: #1a2420;
+  --surface-overlay: rgba(18, 24, 21, 0.72);
+  --accent-primary: #2be383;
+  --accent-primary-dim: #1a8f52;
+  --accent-secondary: #3fd8e8;
+  --accent-tertiary: #b26cff;
+  --warning: #f2b33d;
+  --error: #ff5c72;
+  --text-primary: #eaf5ee;
+  --text-secondary: #8fa89a;
+  --text-disabled: #4d5a54;
+  --border-subtle: rgba(234, 245, 238, 0.08);
+  --border-focus: var(--accent-primary);
+  --font-ui: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --radius-md: 8px;
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.4);
+}

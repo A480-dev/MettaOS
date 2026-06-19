@@ -21,7 +21,7 @@ if [ -d /usr/share/themes/Metta-Dark ]; then
   <property name="Net" type="empty">
     <property name="ThemeName" type="string" value="Metta-Dark"/>
     <property name="IconThemeName" type="string" value="Papirus-Dark"/>
-    <property name="FontName" type="string" value="JetBrains Mono 10"/>
+    <property name="FontName" type="string" value="Inter 10"/>
   </property>
 </channel>
 EOF

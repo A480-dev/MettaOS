@@ -2,15 +2,22 @@
 """Generate METTA OS Matrix rain wallpaper (3840x2160)."""
 
 import random
+import sys
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFont
+try:
+    from PIL import Image, ImageDraw, ImageFont
+except ImportError as exc:
+    sys.exit(
+        "ERROR: python3-pillow required (apt install python3-pillow)\n"
+        "  or run generate-assets.sh inside the Docker builder."
+    )
 
 WIDTH = 3840
 HEIGHT = 2160
 COLUMNS = 120
-BG = (0, 0, 0)
-GREEN = (0, 255, 65)
+BG = (10, 14, 12)
+GREEN = (43, 227, 131)
 
 
 def main() -> None:
@@ -33,7 +40,11 @@ def main() -> None:
             if y < 0 or y > HEIGHT:
                 continue
             brightness = max(30, 255 - row * 6)
-            color = (0, brightness, int(brightness * 0.25))
+            color = (
+                int(GREEN[0] * brightness / 255),
+                int(GREEN[1] * brightness / 255),
+                int(GREEN[2] * brightness / 255),
+            )
             char = random.choice("01")
             draw.text((x, y), char, fill=color, font=font)
 

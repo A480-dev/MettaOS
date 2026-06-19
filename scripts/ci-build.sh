@@ -12,12 +12,28 @@ ISO=""
 
 log() { echo "[ci-build] $*"; }
 
-log "Variant: $VARIANT"
-log "Generating assets..."
-./scripts/generate-assets.sh
+docker_run() {
+  docker run --rm \
+    -v "$ROOT:/build" \
+    -w /build \
+    "$DOCKER_IMAGE" \
+    -c "$*"
+}
 
-log "Building Docker image..."
-docker build -t "$DOCKER_IMAGE" -f docker/Dockerfile.build docker/
+if ! docker image inspect "$DOCKER_IMAGE" >/dev/null 2>&1; then
+  log "Building Docker image..."
+  docker build -t "$DOCKER_IMAGE" -f docker/Dockerfile.build docker/
+else
+  log "Using existing Docker image: $DOCKER_IMAGE"
+fi
+
+if [ ! -f "$ROOT/assets/source/metta-logo-source.png" ]; then
+  log "ERROR: Missing assets/source/metta-logo-source.png (commit the logo source file)" >&2
+  exit 1
+fi
+
+log "Generating assets (inside Docker)..."
+docker_run "./scripts/generate-assets.sh"
 
 log "Building live ISO (privileged)..."
 docker run --rm --privileged \

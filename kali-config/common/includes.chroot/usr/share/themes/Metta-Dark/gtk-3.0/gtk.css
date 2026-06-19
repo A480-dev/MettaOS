@@ -1,66 +1,194 @@
+/*
+ * METTA OS — Metta-Dark GTK3
+ * Tokens: surface-base #0A0E0C, accent-primary #2BE383, accent-secondary #3FD8E8,
+ *         accent-tertiary #B26CFF, text-primary #EAF5EE
+ */
+
 * {
-  color: #e8e8e8;
+  color: #eaf5ee;
+  -GtkWidget-focus-line-width: 0;
+  outline-style: none;
 }
 
 window {
-  background-color: #0D0F0D;
+  background-color: #0a0e0c;
 }
 
+/* —— Buttons —— */
 button {
-  background-color: #1a1f1a;
-  border: 1px solid #00FF41;
-  border-radius: 2px;
-  padding: 4px 8px;
+  background-color: #1a2420;
+  color: #eaf5ee;
+  border: 1px solid rgba(234, 245, 238, 0.08);
+  border-radius: 8px;
+  padding: 8px 16px;
+  transition: all 180ms ease-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 button:hover {
-  background-color: #243024;
-  border-color: #00FFFF;
+  background-color: #121815;
+  border-color: rgba(234, 245, 238, 0.14);
+}
+
+button:focus {
+  border-color: #2be383;
+  box-shadow: 0 0 0 2px rgba(43, 227, 131, 0.25);
 }
 
 button:active {
-  background-color: #00FF41;
-  color: #000000;
+  background-color: #1a8f52;
+  color: #0a0e0c;
 }
 
+button.suggested-action,
+button.default {
+  background-color: #2be383;
+  color: #0a0e0c;
+  border-color: transparent;
+  font-weight: 600;
+}
+
+button.suggested-action:hover,
+button.default:hover {
+  background-color: #1a8f52;
+}
+
+/* —— Inputs —— */
 entry {
-  background-color: #0a0c0a;
-  border: 1px solid #333;
-  color: #ffffff;
+  background-color: #121815;
+  color: #eaf5ee;
+  border: 1px solid rgba(234, 245, 238, 0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-height: 16px;
 }
 
 entry:focus {
-  border-color: #00FF41;
+  border-color: #2be383;
+  box-shadow: 0 0 0 2px rgba(43, 227, 131, 0.2);
+}
+
+/* —— Notebook / tabs —— */
+notebook {
+  background-color: #0a0e0c;
 }
 
 notebook tab {
-  background-color: #1a1f1a;
-  border: 1px solid #333;
+  background-color: #121815;
+  color: #8fa89a;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  padding: 8px 16px;
+  margin: 2px 2px 0 2px;
 }
 
 notebook tab:checked {
-  border-color: #00FF41;
-  color: #00FF41;
+  background-color: #1a2420;
+  color: #eaf5ee;
+  box-shadow: 0 -2px 0 #2be383 inset;
 }
 
+/* —— Lists / trees —— */
 treeview {
-  background-color: #0D0F0D;
+  background-color: #0a0e0c;
+  color: #eaf5ee;
 }
 
 treeview:selected {
-  background-color: #1a3d1a;
-  color: #00FF41;
+  background-color: rgba(43, 227, 131, 0.15);
+  color: #2be383;
 }
 
+/* —— Header bars —— */
 headerbar {
-  background-color: #0a0c0a;
-  border-bottom: 1px solid #00FF41;
+  background-color: #121815;
+  color: #eaf5ee;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  padding: 4px 8px;
 }
 
+headerbar button {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 6px;
+}
+
+headerbar button:hover {
+  background-color: rgba(234, 245, 238, 0.06);
+}
+
+/* —— Menus —— */
+menu,
+.menu,
+popover.background {
+  background-color: #1a2420;
+  border: 1px solid rgba(234, 245, 238, 0.08);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+menuitem:hover {
+  background-color: rgba(43, 227, 131, 0.12);
+  border-radius: 6px;
+}
+
+/* —— Links / info accents —— */
+link,
+.link {
+  color: #3fd8e8;
+}
+
+/* —— Progress —— */
 progressbar trough {
-  background-color: #1a1f1a;
+  background-color: #121815;
+  border-radius: 4px;
+  min-height: 6px;
 }
 
 progressbar progress {
-  background-color: #00FF41;
+  background-color: #2be383;
+  border-radius: 4px;
+}
+
+/* —— Scrollbars —— */
+scrollbar slider {
+  background-color: rgba(143, 168, 154, 0.35);
+  border-radius: 4px;
+  min-width: 6px;
+  min-height: 6px;
+}
+
+/* —— Xfce panel —— */
+.xfce4-panel .background {
+  background-color: rgba(18, 24, 21, 0.85);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* —— Tooltips —— */
+tooltip.background {
+  background-color: rgba(26, 36, 32, 0.95);
+  color: #eaf5ee;
+  border: 1px solid rgba(234, 245, 238, 0.08);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+/* —— Semantic badges (libadwaita-like classes where present) —— */
+.badge,
+.highlight-tertiary {
+  background-color: #b26cff;
+  color: #0a0e0c;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.warning {
+  color: #f2b33d;
+}
+
+.error {
+  color: #ff5c72;
 }

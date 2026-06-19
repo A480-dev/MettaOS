@@ -84,7 +84,8 @@ sha256sum images/metta-os-1.0-amd64.iso > images/metta-os-1.0-amd64.iso.sha256
 ## Estructura del proyecto
 
 ```
-assets/          Fuentes SVG y scripts de generación (logo, wallpaper)
+assets/          Fuente logo, SVG, process_logo.py, wallpaper
+preview/         mockup.html + scripts preview Nivel 0/1
 docker/          Dockerfile para build en host no-Debian
 kali-config/     Configuración live-build (hooks, includes, bootloaders)
 scripts/         generate-assets.sh, verify-branding.sh
@@ -102,10 +103,45 @@ Todos los cambios van en `kali-config/common/`:
 - `includes.binary/` — overlay de la ISO
 - `bootloaders/` — GRUB e isolinux
 
-Regenerar assets visuales:
+Regenerar logo y wallpaper (fuente: `assets/source/metta-logo-source.png`):
 
 ```bash
 ./scripts/generate-assets.sh
+```
+
+## Preview UI (sin compilar ISO)
+
+| Nivel | Comando | Tiempo |
+|-------|---------|--------|
+| **0** Mockup HTML | `./preview/preview-html.sh` | instantáneo |
+| **All** | `./preview/preview-all.sh` | lo que el host soporte |
+| **1a** GRUB (tema) | `./preview/preview-grub.sh` | ~30s |
+| **1a′** GRUB (boot ISO) | `./preview/preview-grub.sh --boot-iso` | requiere ISO |
+| **1b** Plymouth | `sudo ./preview/preview-plymouth.sh` | ~10s |
+| **1c** Escritorio Xfce | `./preview/preview-desktop.sh` | requiere chroot (fallback → mockup) |
+
+### Dependencias preview (Arch Linux)
+
+```bash
+sudo pacman -S python-pillow imagemagick xorg-xephyr
+# Opcional Nivel 1a (sin venv: --user; dentro de venv: sin --user):
+pip install grub2-theme-preview
+# o fuera del venv:
+pip install --user grub2-theme-preview
+# Opcional Nivel 1b:
+sudo pacman -S plymouth && sudo ./preview/preview-plymouth.sh
+```
+| **2** Gate final | `./scripts/ci-build.sh` | 1–3h |
+
+Ejecuta `generate-assets.sh` antes del preview para enlazar assets en `preview/assets/`.
+
+**Importante:** `preview-grub.sh` (sin flags) solo previsualiza el **tema** del menú GRUB en QEMU. Al pulsar *Live system* verás un aviso en consola y volverás al menú — no hay kernel en esa imagen de prueba. Para arrancar METTA OS de verdad necesitas la ISO compilada:
+
+```bash
+./scripts/ci-build.sh
+./test-iso.sh images/metta-os-1.0-amd64.iso
+# o, si la ISO ya existe en el repo:
+./preview/preview-grub.sh --boot-iso
 ```
 
 ## Verificación de branding
@@ -126,7 +162,7 @@ En entornos sin KVM (CI), usa TCG automáticamente.
 
 ## Wallpaper animado (opcional)
 
-La versión animada Matrix rain **no está activada por defecto** por consumo de CPU/GPU. El wallpaper estático (`metta-matrix-default.png`, 4K) garantiza rendimiento en cualquier hardware. Para habilitar animación en el futuro, ver documentación en `assets/wallpaper/`.
+El wallpaper estático usa matrix rain procedural con logo superpuesto (`metta-matrix-with-logo.png`). La versión sin logo (`metta-matrix-default.png`) queda disponible como alternativa.
 
 ## Nota sobre la ISO de referencia
 
