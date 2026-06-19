@@ -29,6 +29,8 @@ git push origin v1.0.0
 
 El workflow publica la ISO en GitHub Releases automáticamente.
 
+**Reutilizar ISO sin recompilar:** en Actions → *Run workflow* activa *skip_build* (o deja que el cache la restaure si no cambiaste `kali-config`/assets). Solo corre verify + QEMU (~5–10 min). La ISO del run fallido **no se guardó** en artefactos; tras el primer build exitoso queda en cache de GitHub.
+
 ### CI local (reproduce Actions)
 
 ```bash
@@ -70,6 +72,9 @@ Instalar también `kali-archive-keyring` y `live-build` parcheado de Kali (ver [
 | `METTA_RUN_TESTS` | `1` | `0` omite tests QEMU |
 | `METTA_TEST_TIMEOUT` | `120` | Segundos de test por modo boot |
 | `METTA_DOCKER_IMAGE` | `metta-os-builder` | Nombre imagen Docker |
+| `METTA_SKIP_BUILD` | `0` | `1` reutiliza ISO en `images/` (no ejecuta lb-build) |
+| `METTA_SKIP_ASSETS` | `0` | `1` omite `generate-assets.sh` |
+| `METTA_SKIP_CHROOT_VERIFY` | `0` | `1` omite verify en `chroot/` (útil si solo tienes ISO) |
 
 ### Build manual (dentro del contenedor o en Kali)
 

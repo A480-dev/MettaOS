@@ -21,6 +21,11 @@ on:
         required: true
         default: true
         type: boolean
+      skip_build:
+        description: 'Reuse cached ISO (skip lb-build; needs cache hit or manual ISO in images/)'
+        required: true
+        default: false
+        type: boolean
 
 concurrency:
   group: metta-os-build-${{ github.ref }}
@@ -99,17 +104,49 @@ jobs:
             docker save "$METTA_DOCKER_IMAGE" -o /tmp/metta-docker-cache/image.tar
           fi
 
+      - name: ISO build fingerprint
+        id: isokey
+        env:
+          METTA_VARIANT: ${{ steps.cfg.outputs.variant }}
+        run: |
+          chmod +x scripts/iso-build-fingerprint.sh
+          echo "hash=$(./scripts/iso-build-fingerprint.sh)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore ISO cache
+        id: iso-cache
+        uses: actions/cache@v4
+        with:
+          path: images/metta-os-*.iso
+          key: metta-iso-${{ steps.cfg.outputs.variant }}-${{ steps.isokey.outputs.hash }}
+          restore-keys: |
+            metta-iso-${{ steps.cfg.outputs.variant }}-
+
       - name: CI build pipeline
         env:
           METTA_VARIANT: ${{ steps.cfg.outputs.variant }}
           METTA_RUN_TESTS: ${{ steps.cfg.outputs.run_tests == 'true' && '1' || '0' }}
           METTA_TEST_TIMEOUT: '90'
           METTA_TEST_UEFI: '0'
+          METTA_SKIP_BUILD: ${{ (steps.iso-cache.outputs.cache-hit == 'true' || github.event.inputs.skip_build == 'true') && '1' || '0' }}
+          METTA_SKIP_ASSETS: ${{ (steps.iso-cache.outputs.cache-hit == 'true' || github.event.inputs.skip_build == 'true') && '1' || '0' }}
+          METTA_SKIP_CHROOT_VERIFY: ${{ (steps.iso-cache.outputs.cache-hit == 'true' || github.event.inputs.skip_build == 'true') && '1' || '0' }}
         run: |
           chmod +x scripts/*.sh lb-build.sh test-iso.sh
+          if [ "$METTA_SKIP_BUILD" = "1" ]; then
+            echo "Reusing ISO (cache-hit=${{ steps.iso-cache.outputs.cache-hit }}, skip_build=${{ github.event.inputs.skip_build }})"
+            ls -lh images/metta-os-*.iso 2>/dev/null || { echo "No ISO to reuse"; exit 1; }
+          fi
           ./scripts/ci-build.sh
 
+      - name: Save ISO cache
+        if: always() && steps.iso-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: images/metta-os-*.iso
+          key: metta-iso-${{ steps.cfg.outputs.variant }}-${{ steps.isokey.outputs.hash }}
+
       - name: Upload ISO artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.cfg.outputs.artifact }}
