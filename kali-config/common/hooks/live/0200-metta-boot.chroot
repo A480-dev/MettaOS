@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+  plymouth-set-default-theme -R metta 2>/dev/null || true
+fi
+
+if command -v update-initramfs >/dev/null 2>&1; then
+  update-initramfs -u -k all 2>/dev/null || update-initramfs -u 2>/dev/null || true
+fi
+
+# METTA OS GRUB defaults
+mkdir -p /etc/default/grub.d
+cat > /etc/default/grub.d/metta-theme.cfg << 'EOF'
+GRUB_THEME="/boot/grub/themes/metta/theme.txt"
+GRUB_TIMEOUT_STYLE=menu
+EOF
+
+if [ -f /etc/default/grub.d/kali-themes.cfg ]; then
+  mv /etc/default/grub.d/kali-themes.cfg /etc/default/grub.d/kali-themes.cfg.disabled
+fi

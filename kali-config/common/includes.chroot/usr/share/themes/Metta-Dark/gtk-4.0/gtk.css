@@ -1,0 +1,26 @@
+window {
+  background-color: #0D0F0D;
+}
+
+button {
+  background-color: #1a1f1a;
+  border: 1px solid #00FF41;
+}
+
+button:hover {
+  border-color: #00FFFF;
+}
+
+entry {
+  background-color: #0a0c0a;
+  border: 1px solid #333;
+}
+
+entry:focus {
+  border-color: #00FF41;
+}
+
+headerbar {
+  background-color: #0a0c0a;
+  border-bottom: 1px solid #00FF41;
+}

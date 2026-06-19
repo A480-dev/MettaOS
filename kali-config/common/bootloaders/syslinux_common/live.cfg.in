@@ -1,0 +1,30 @@
+label live-@FLAVOUR@
+        menu label ^Live system (METTA OS)
+        menu default
+        linux @LINUX@
+        initrd @INITRD@
+        append @APPEND_LIVE@
+
+label live-@FLAVOUR@-failsafe
+        menu label Live system (METTA OS fail-safe mode)
+        linux @LINUX@
+        initrd @INITRD@
+        append @APPEND_LIVE_FAILSAFE@
+
+label live-forensic
+        menu label Live system (^forensic mode)
+        linux @LINUX@
+        initrd @INITRD@
+        append boot=live username=kali hostname=metta systemd.swap=no noautomount
+
+label live-persistence
+        menu label Live system with ^USB persistence
+        linux @LINUX@
+        initrd @INITRD@
+        append boot=live username=kali hostname=metta persistence
+
+label live-encrypted-persistence
+        menu label Live system with USB ^Encrypted persistence
+        linux @LINUX@
+        initrd @INITRD@
+        append boot=live persistent=cryptsetup persistence-encryption=luks username=kali hostname=metta persistence

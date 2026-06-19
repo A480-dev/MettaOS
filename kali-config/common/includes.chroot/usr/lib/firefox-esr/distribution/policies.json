@@ -1,0 +1,8 @@
+{
+  "policies": {
+    "Homepage": {
+      "URL": "about:blank",
+      "Locked": false
+    }
+  }
+}

@@ -1,0 +1,50 @@
+#!/bin/sh
+set -e
+
+# Late pass after all packages installed — catch residual Kali branding
+for pattern in \
+  '/etc/os-release' \
+  '/etc/issue' \
+  '/etc/issue.net' \
+  '/etc/motd' \
+  '/usr/share/plymouth/themes/*/plymouth.plymouth' \
+  '/boot/grub/themes/*/theme.txt'
+do
+  for f in $pattern; do
+    [ -f "$f" ] || continue
+    sed -i \
+      -e 's/Kali Linux/METTA OS/g' \
+      -e 's/Kali GNU\/Linux/METTA OS/g' \
+      -e 's/Kali Live/METTA OS/g' \
+      -e 's/"Kali"/"METTA OS"/g' \
+      "$f" || true
+  done
+done
+
+# Ensure live config uses METTA OS hostname
+mkdir -p /etc/live/config.conf.d
+cat > /etc/live/config.conf.d/metta.conf << 'EOF'
+LIVE_HOSTNAME="metta"
+LIVE_USERNAME="kali"
+LIVE_USER_FULLNAME="METTA OS Live user"
+EOF
+rm -f /etc/live/config.conf.d/kali.conf
+
+# Disable kali-themes GRUB override on installed systems
+if [ -f /etc/default/grub.d/kali-themes.cfg ]; then
+  mv /etc/default/grub.d/kali-themes.cfg /etc/default/grub.d/kali-themes.cfg.disabled
+fi
+
+# Ensure os-release final state
+cat > /etc/os-release << 'EOF'
+PRETTY_NAME="METTA OS"
+NAME="METTA OS"
+VERSION_ID="1.0"
+VERSION="1.0 (Matrix)"
+VERSION_CODENAME=matrix
+ID=mettaos
+ID_LIKE=debian
+HOME_URL="https://example.com"
+SUPPORT_URL="https://example.com"
+BUG_REPORT_URL="https://example.com"
+EOF

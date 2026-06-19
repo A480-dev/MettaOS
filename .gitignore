@@ -1,0 +1,32 @@
+## live-build artifacts
+/.build/
+/cache/
+/chroot/
+/config/
+/images/
+.lock
+.mirror
+build.log
+wget-log*
+
+## ISO images and test output
+*.iso
+*.iso.sha256
+test-output/
+boot.log
+
+## Reference installer (not part of build)
+kali-linux-*-installer-amd64.iso
+
+## Generated assets copied into includes
+kali-config/common/includes.chroot/usr/share/metta/branding/*.png
+kali-config/common/includes.chroot/usr/share/backgrounds/metta/*.png
+kali-config/common/bootloaders/grub-pc/splash.png
+kali-config/common/bootloaders/grub-pc/theme/select_*.png
+
+## Python
+__pycache__/
+*.pyc
+
+## Generated wallpaper source copy
+assets/wallpaper/metta-matrix-default.png

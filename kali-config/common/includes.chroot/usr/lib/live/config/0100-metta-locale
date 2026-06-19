@@ -1,0 +1,16 @@
+#!/bin/sh
+# METTA OS — default locale and keyboard at live boot
+
+LIVE_LOCALES="${PRIMARY_LOCALE:-es_419.UTF-8}"
+LIVE_KEYBOARD_LAYOUTS="latam"
+
+if ! locale -a 2>/dev/null | grep -qi 'es_419'; then
+  LIVE_LOCALES="es_MX.UTF-8"
+fi
+
+export LANG="${LIVE_LOCALES}"
+export LC_ALL="${LIVE_LOCALES}"
+
+if command -v setxkbmap >/dev/null 2>&1; then
+  setxkbmap -layout latam 2>/dev/null || true
+fi

@@ -1,0 +1,66 @@
+* {
+  color: #e8e8e8;
+}
+
+window {
+  background-color: #0D0F0D;
+}
+
+button {
+  background-color: #1a1f1a;
+  border: 1px solid #00FF41;
+  border-radius: 2px;
+  padding: 4px 8px;
+}
+
+button:hover {
+  background-color: #243024;
+  border-color: #00FFFF;
+}
+
+button:active {
+  background-color: #00FF41;
+  color: #000000;
+}
+
+entry {
+  background-color: #0a0c0a;
+  border: 1px solid #333;
+  color: #ffffff;
+}
+
+entry:focus {
+  border-color: #00FF41;
+}
+
+notebook tab {
+  background-color: #1a1f1a;
+  border: 1px solid #333;
+}
+
+notebook tab:checked {
+  border-color: #00FF41;
+  color: #00FF41;
+}
+
+treeview {
+  background-color: #0D0F0D;
+}
+
+treeview:selected {
+  background-color: #1a3d1a;
+  color: #00FF41;
+}
+
+headerbar {
+  background-color: #0a0c0a;
+  border-bottom: 1px solid #00FF41;
+}
+
+progressbar trough {
+  background-color: #1a1f1a;
+}
+
+progressbar progress {
+  background-color: #00FF41;
+}

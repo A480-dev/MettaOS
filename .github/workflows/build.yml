@@ -1,0 +1,158 @@
+name: Build METTA OS
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: 'live-build variant'
+        required: true
+        default: xfce-light
+        type: choice
+        options:
+          - xfce-light
+          - default
+      run_tests:
+        description: 'Run QEMU smoke test'
+        required: true
+        default: true
+        type: boolean
+
+concurrency:
+  group: metta-os-build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  METTA_DOCKER_IMAGE: metta-os-builder
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
+      - name: Resolve build variant
+        id: cfg
+        run: |
+          variant=default
+          run_tests=true
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            variant="${{ inputs.variant }}"
+            if [ "${{ inputs.run_tests }}" = "true" ]; then
+              run_tests=true
+            else
+              run_tests=false
+            fi
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            variant=xfce-light
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            variant=default
+          fi
+          echo "variant=$variant" >> "$GITHUB_OUTPUT"
+          echo "run_tests=$run_tests" >> "$GITHUB_OUTPUT"
+          echo "artifact=metta-os-${variant}-amd64" >> "$GITHUB_OUTPUT"
+
+      - name: Show disk space
+        run: df -h
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker image layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/metta-docker-cache
+          key: metta-docker-${{ hashFiles('docker/Dockerfile.build') }}
+          restore-keys: |
+            metta-docker-
+
+      - name: Load or build builder image
+        run: |
+          if [ -f /tmp/metta-docker-cache/image.tar ]; then
+            echo "Loading cached Docker image..."
+            docker load -i /tmp/metta-docker-cache/image.tar
+          else
+            echo "Building Docker image..."
+            docker build -t "$METTA_DOCKER_IMAGE" -f docker/Dockerfile.build docker/
+            mkdir -p /tmp/metta-docker-cache
+            docker save "$METTA_DOCKER_IMAGE" -o /tmp/metta-docker-cache/image.tar
+          fi
+
+      - name: CI build pipeline
+        env:
+          METTA_VARIANT: ${{ steps.cfg.outputs.variant }}
+          METTA_RUN_TESTS: ${{ steps.cfg.outputs.run_tests == 'true' && '1' || '0' }}
+          METTA_TEST_TIMEOUT: '90'
+          METTA_TEST_UEFI: '0'
+        run: |
+          chmod +x scripts/*.sh lb-build.sh test-iso.sh
+          ./scripts/ci-build.sh
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.cfg.outputs.artifact }}
+          path: |
+            images/metta-os-*.iso
+            images/metta-os-*.iso.sha256
+            images/*.log
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metta-os-test-output
+          path: test-output/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metta-os-build-log
+          path: |
+            build.log
+            images/*.log
+          retention-days: 7
+          if-no-files-found: ignore
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download ISO artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: metta-os-default-amd64
+          path: release/
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-about" version="1.0">
+  <property name="xfce4-about" type="empty">
+    <property name="Name" type="string" value="METTA OS"/>
+    <property name="Version" type="string" value="1.0 (Matrix)"/>
+    <property name="OS" type="string" value="METTA OS"/>
+    <property name="Website" type="string" value="https://example.com"/>
+  </property>
+</channel>

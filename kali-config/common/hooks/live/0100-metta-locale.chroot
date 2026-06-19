@@ -1,0 +1,31 @@
+#!/bin/sh
+set -e
+
+PRIMARY_LOCALE="es_419.UTF-8"
+FALLBACK_LOCALE="es_MX.UTF-8"
+
+if grep -q "^# ${PRIMARY_LOCALE}" /etc/locale.gen; then
+  sed -i "s/^# ${PRIMARY_LOCALE}/${PRIMARY_LOCALE}/" /etc/locale.gen
+elif grep -q "^# ${FALLBACK_LOCALE}" /etc/locale.gen; then
+  sed -i "s/^# ${FALLBACK_LOCALE}/${FALLBACK_LOCALE}/" /etc/locale.gen
+  PRIMARY_LOCALE="${FALLBACK_LOCALE}"
+fi
+
+sed -i 's/^# en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
+
+locale-gen
+
+if [ "$PRIMARY_LOCALE" = "es_419.UTF-8" ] && ! locale -a 2>/dev/null | grep -qi 'es_419'; then
+  PRIMARY_LOCALE="${FALLBACK_LOCALE}"
+  sed -i "s/^# ${FALLBACK_LOCALE}/${FALLBACK_LOCALE}/" /etc/locale.gen
+  locale-gen
+fi
+
+update-locale LANG="${PRIMARY_LOCALE}" LC_ALL="${PRIMARY_LOCALE}"
+
+if [ -f /etc/default/keyboard ]; then
+  sed -i 's/^XKBLAYOUT=.*/XKBLAYOUT="latam"/' /etc/default/keyboard
+fi
+
+echo "LANG=${PRIMARY_LOCALE}" > /etc/default/locale
+echo "LC_ALL=${PRIMARY_LOCALE}" >> /etc/default/locale

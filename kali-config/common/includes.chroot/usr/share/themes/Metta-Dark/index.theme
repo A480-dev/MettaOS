@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Metta-Dark
+Comment=METTA OS dark Matrix theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=Metta-Dark
+MetacityTheme=Metta-Dark
+IconTheme=Papirus-Dark
+CursorTheme=default
+ButtonLayout=menu:minimize,maximize,close

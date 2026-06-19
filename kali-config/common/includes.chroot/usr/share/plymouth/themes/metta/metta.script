@@ -1,0 +1,22 @@
+# METTA OS Plymouth theme
+
+Window.SetBackgroundTopColor(0.0, 0.0, 0.0);
+Window.SetBackgroundBottomColor(0.05, 0.06, 0.05);
+
+logo_image = Image.Text("METTA OS", 1.0, 1.0, 1.0);
+logo_sprite = Sprite(logo_image);
+logo_sprite.SetX(Window.GetWidth() / 2 - logo_image.GetWidth() / 2);
+logo_sprite.SetY(Window.GetHeight() / 2 - logo_image.GetHeight() / 2 - 30);
+
+progress_box.image = Image.Text("booting...", 0.0, 1.0, 0.25);
+progress_box.sprite = Sprite(progress_box.image);
+progress_box.sprite.SetX(Window.GetWidth() / 2 - progress_box.image.GetWidth() / 2);
+progress_box.sprite.SetY(Window.GetHeight() / 2 + 20);
+
+fun progress_callback(duration, progress) {
+    if (progress > 0.01) {
+        progress_box.sprite.SetOpacity(1);
+    }
+}
+
+Plymouth.SetBootProgressFunction(progress_callback);
