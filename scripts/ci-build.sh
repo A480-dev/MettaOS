@@ -48,6 +48,20 @@ purge_stale_iso() {
 }
 
 if ! docker image inspect "$DOCKER_IMAGE" >/dev/null 2>&1; then
+  if ! command -v docker >/dev/null 2>&1; then
+    cat >&2 <<EOF
+[ci-build] ERROR: docker no está instalado.
+
+  Arch:  sudo pacman -S docker && sudo systemctl enable --now docker
+         sudo usermod -aG docker "\$USER"
+
+  Luego: ./scripts/ci-build.sh
+
+  Sin Docker local: haz commit + push a GitHub — Actions construye la ISO.
+
+EOF
+    exit 1
+  fi
   log "Building Docker image..."
   DOCKERFILE_HASH="$(sha256sum docker/Dockerfile.build | awk '{print $1}')"
   docker build \
@@ -96,6 +110,13 @@ elif [ "${METTA_SKIP_ASSETS:-0}" = "1" ]; then
   docker_run "./scripts/generate-assets.sh"
 else
   docker_run "./scripts/generate-assets.sh"
+fi
+
+if [ "${METTA_BUILD_APPS:-0}" = "1" ]; then
+  log "Building METTA Tauri apps..."
+  docker_run "cd apps && ./build-all.sh"
+else
+  log "Skipping Tauri apps (METTA_BUILD_APPS=0). Stubs will be used in ISO."
 fi
 
 ISO="$EXISTING_ISO"

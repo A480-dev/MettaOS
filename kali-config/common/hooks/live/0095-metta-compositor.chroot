@@ -1,0 +1,42 @@
+#!/bin/sh
+set -e
+
+# Picom compositor + disable xfwm4 compositing
+mkdir -p /etc/skel/.config/autostart /etc/xdg/autostart
+
+cat > /etc/skel/.config/autostart/picom.desktop << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=Picom
+Exec=picom --config /etc/skel/.config/picom/picom.conf -b
+Hidden=false
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=XFCE;
+EOF
+
+cp /etc/skel/.config/autostart/picom.desktop /etc/xdg/autostart/picom.desktop 2>/dev/null || true
+
+cat > /etc/skel/.config/autostart/metta-hud.desktop << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=METTA HUD
+Exec=conky -c /etc/skel/.conkyrc
+Hidden=false
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=XFCE;
+EOF
+
+cat > /etc/skel/.config/autostart/xbindkeys.desktop << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=xbindkeys
+Exec=xbindkeys -f /etc/skel/.xbindkeysrc
+Hidden=false
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=XFCE;
+EOF
+
+if command -v xfconf-query >/dev/null 2>&1; then
+  xfconf-query -c xfwm4 -p /general/use_compositing -n -t bool -s false 2>/dev/null || \
+    xfconf-query -c xfwm4 -p /general/use_compositing -s false 2>/dev/null || true
+fi

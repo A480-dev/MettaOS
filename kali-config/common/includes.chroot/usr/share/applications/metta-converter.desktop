@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA Converter
+Comment=METTA OS — METTA Converter
+Exec=metta-converter
+Icon=/usr/share/icons/metta/128x128/apps/mettaos.png
+Categories=Utility;
+Terminal=false
+StartupNotify=true

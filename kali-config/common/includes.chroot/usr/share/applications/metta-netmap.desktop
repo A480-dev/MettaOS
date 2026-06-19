@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA Net Map
+Comment=METTA OS — METTA Net Map
+Exec=metta-netmap
+Icon=/usr/share/icons/metta/128x128/apps/mettaos.png
+Categories=Network;
+Terminal=false
+StartupNotify=true

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA Launcher
+Comment=METTA OS — METTA Launcher
+Exec=metta-launcher
+Icon=/usr/share/icons/metta/128x128/apps/mettaos.png
+Categories=Utility;
+Terminal=false
+StartupNotify=true

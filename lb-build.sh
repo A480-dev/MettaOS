@@ -6,7 +6,7 @@ set -e
 set -o pipefail # Bashism
 
 # METTA OS build defaults (fork of kali-live)
-METTA_VERSION="1.0"
+METTA_VERSION="2.0"
 KALI_DIST="kali-rolling"
 KALI_VERSION=""
 KALI_VARIANT="default"

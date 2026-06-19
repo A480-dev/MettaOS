@@ -1,0 +1,81 @@
+:root {
+  --surface-base:      #0A0E0C;
+  --surface-panel:     #121815;
+  --surface-elevated:  #1A2420;
+  --surface-overlay:   rgba(18, 24, 21, 0.72);
+  --accent-primary:    #2BE383;
+  --accent-primary-dim:#1A8F52;
+  --accent-secondary:  #3FD8E8;
+  --accent-tertiary:   #B26CFF;
+  --success:           #2BE383;
+  --warning:           #F2B33D;
+  --error:             #FF5C72;
+  --text-primary:      #EAF5EE;
+  --text-secondary:    #8FA89A;
+  --text-disabled:     #4D5A54;
+  --border-subtle:     rgba(234, 245, 238, 0.08);
+  --border-focus:      #2BE383;
+  --radius:            8px;
+  --radius-lg:         12px;
+  --font-ui:           'Inter', system-ui, sans-serif;
+  --font-mono:         'JetBrains Mono', monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  min-height: 100%;
+  background: var(--surface-base);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+.metta-btn {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px 16px;
+}
+
+.metta-btn:hover {
+  border-color: var(--accent-primary);
+}
+
+.metta-btn-primary {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--surface-base);
+  font-weight: 600;
+}
+
+.metta-input {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.metta-input:focus {
+  border-color: var(--border-focus);
+  outline: none;
+}
+
+.metta-card {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}

@@ -1,0 +1,2 @@
+metta ALL=(root) NOPASSWD: /usr/bin/apt, /usr/bin/apt-get, /usr/bin/dpkg
+metta ALL=(root) NOPASSWD: /usr/bin/nmap

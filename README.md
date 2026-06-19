@@ -1,6 +1,8 @@
 # METTA OS — fork de kali-live
 
-Distro derivada de Kali Linux con identidad propia **METTA OS**: estética Matrix, español latinoamericano por defecto, y branding completo sin referencias visibles a Kali.
+Distro derivada de Kali Linux con identidad propia **METTA OS** (v2.0.0): estética Matrix, español latinoamericano, ecosistema de apps Tauri y branding completo.
+
+> **METTA OS 2.0:** ver [docs/METTA-2.0.md](docs/METTA-2.0.md) para arquitectura de apps, `.mettapp` y orden de build.
 
 ## Build en GitHub Actions (recomendado)
 
@@ -37,6 +39,22 @@ El workflow publica la ISO en GitHub Releases automáticamente.
 chmod +x scripts/ci-build.sh
 METTA_VARIANT=xfce-light ./scripts/ci-build.sh
 ```
+
+## Build local en Arch (sin Docker para assets)
+
+```bash
+sudo ./scripts/setup-host-arch.sh   # una vez
+./scripts/generate-assets.sh        # wallpaper, sonidos, Plymouth
+
+# ISO completa (requiere Docker):
+./scripts/ci-build.sh
+
+# Solo assets + apps vía Docker (sin ISO):
+./scripts/docker-run.sh ./scripts/generate-assets.sh
+./scripts/docker-run.sh "cd apps && ./build-all.sh"
+```
+
+Si **no tienes Docker**, sube el código a GitHub — el workflow **Build METTA OS** genera la ISO en la nube.
 
 ## Build local (opcional)
 
@@ -161,7 +179,15 @@ Ejecuta `generate-assets.sh` antes del preview para enlazar assets en `preview/a
 
 ## Tests QEMU
 
-`test-iso.sh` ejecuta arranque en modo BIOS y UEFI (si OVMF está disponible), captura screenshots en `test-output/` y verifica ausencia de kernel panic.
+`test-iso.sh` ejecuta un **smoke test** automático (~2–3 min): arranca QEMU, captura screenshots y **cierra solo** (no es para usar el escritorio).
+
+Para probar la live **interactivamente** (ventana abierta hasta que la cierres):
+
+```bash
+chmod +x run-live.sh
+./run-live.sh metta-os-default-amd64/metta-os-1.0-amd64.iso
+# Login live: usuario metta, contraseña kali
+```
 
 En entornos sin KVM (CI), usa TCG automáticamente.
 

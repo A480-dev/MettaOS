@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA App Store
+Comment=METTA OS — METTA App Store
+Exec=metta-app-store
+Icon=/usr/share/icons/metta/128x128/apps/mettaos.png
+Categories=PackageManager;
+Terminal=false
+StartupNotify=true

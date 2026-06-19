@@ -1,0 +1,4 @@
+[Default Applications]
+application/x-ms-dos-executable=metta-converter.desktop
+application/x-apple-bundle=metta-converter.desktop
+application/x-mettapp=metta-pkg-gui.desktop

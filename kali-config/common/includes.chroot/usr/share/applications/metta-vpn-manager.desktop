@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA VPN Manager
+Comment=METTA OS — METTA VPN Manager
+Exec=metta-vpn-manager
+Icon=/usr/share/icons/metta/128x128/apps/mettaos.png
+Categories=Network;
+Terminal=false
+StartupNotify=true

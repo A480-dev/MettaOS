@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA Notify
+Comment=METTA OS — METTA Notify
+Exec=metta-notify --daemon
+Icon=/usr/share/icons/metta/128x128/apps/mettaos.png
+Categories=System;
+Terminal=false
+StartupNotify=true

@@ -40,3 +40,13 @@ preview/grub-theme/
 ## Reference source (keep in repo)
 !assets/source/metta-logo-source.png
 ChatGPT Image*.png
+
+## METTA Tauri apps
+apps/*/node_modules/
+apps/*/dist/
+apps/*/src-tauri/target/
+apps/**/gen/
+
+## Generated v2 assets
+kali-config/common/includes.chroot/usr/share/sounds/metta/stereo/*.ogg
+kali-config/common/includes.chroot/usr/share/plymouth/themes/metta/logo_frame_*.png

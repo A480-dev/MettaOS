@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA Network Scanner
+Comment=METTA OS — METTA Network Scanner
+Exec=metta-scanner
+Icon=/usr/share/icons/metta/128x128/apps/mettaos.png
+Categories=Network;
+Terminal=false
+StartupNotify=true

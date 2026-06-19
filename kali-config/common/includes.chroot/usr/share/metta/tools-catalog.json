@@ -1,0 +1,6 @@
+[
+  {"id": "nmap", "name": "Nmap", "tags": ["recon", "network", "scan"]},
+  {"id": "gobuster", "name": "Gobuster", "tags": ["recon", "web"]},
+  {"id": "sqlmap", "name": "SQLMap", "tags": ["exploit", "web", "sql"]},
+  {"id": "hydra", "name": "Hydra", "tags": ["exploit", "bruteforce"]}
+]

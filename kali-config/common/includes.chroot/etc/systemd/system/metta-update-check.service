@@ -1,0 +1,11 @@
+[Unit]
+Description=METTA OS update check
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/metta/update-check.sh
+User=metta
+
+[Install]
+WantedBy=multi-user.target

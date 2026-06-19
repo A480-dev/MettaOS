@@ -66,12 +66,12 @@ fi
 cat > /etc/os-release << 'EOF'
 PRETTY_NAME="METTA OS"
 NAME="METTA OS"
-VERSION_ID="1.0"
-VERSION="1.0 (Matrix)"
+VERSION_ID="2.0"
+VERSION="2.0.0 (Matrix)"
 VERSION_CODENAME=matrix
 ID=mettaos
 ID_LIKE=debian
-HOME_URL="https://example.com"
-SUPPORT_URL="https://example.com"
-BUG_REPORT_URL="https://example.com"
+HOME_URL="https://mettaos.dev"
+SUPPORT_URL="https://mettaos.dev/support"
+BUG_REPORT_URL="https://mettaos.dev/support"
 EOF

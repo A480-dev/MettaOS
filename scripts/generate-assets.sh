@@ -69,8 +69,6 @@ ISOLINUX="$ROOT/kali-config/common/includes.binary/isolinux"
 mkdir -p "$ISOLINUX"
 cp "$GRUB_THEME/splash.png" "$ISOLINUX/splash.png"
 mkdir -p "$ROOT/kali-config/common/includes.binary/.disk"
-echo 'METTA OS 1.0 "Matrix" - Live amd64' > "$ROOT/kali-config/common/includes.binary/.disk/info"
-
 mkdir -p "$PREVIEW/assets"
 for f in "$BRANDING_DST/png/icon/metta-icon-512.png" \
          "$BRANDING_DST/png/full/metta-full-2048.png" \
@@ -79,4 +77,19 @@ for f in "$BRANDING_DST/png/icon/metta-icon-512.png" \
   [ -f "$f" ] && ln -sf "$f" "$PREVIEW/assets/$(basename "$f")" 2>/dev/null || true
 done
 
-echo "Assets generated (logo + wallpaper + boot splash)."
+echo 'METTA OS 2.0.0 "Matrix" - Live amd64' > "$ROOT/kali-config/common/includes.binary/.disk/info"
+
+# METTA OS 2.0 — sounds, Plymouth frames, Calamares branding assets
+if python3 -c "import scipy, soundfile" 2>/dev/null; then
+  "$ROOT/scripts/generate-sounds.sh" || true
+else
+  echo "WARN: scipy/soundfile missing — skip sound generation"
+fi
+python3 "$ROOT/assets/plymouth/generate-frames.py" 2>/dev/null || true
+CALAMARES_BR="$ROOT/kali-config/common/includes.chroot/etc/calamares/branding/metta"
+mkdir -p "$CALAMARES_BR"
+[ -f "$WALLPAPER_DST/metta-matrix-with-logo.png" ] && cp "$WALLPAPER_DST/metta-matrix-with-logo.png" "$CALAMARES_BR/splash.png"
+[ -f "$BRANDING_DST/png/icon/metta-icon-512.png" ] && cp "$BRANDING_DST/png/icon/metta-icon-512.png" "$CALAMARES_BR/icon.png"
+"$ROOT/scripts/generate-desktops.sh" "$ROOT/kali-config/common/includes.chroot/usr/share/applications"
+
+echo "Assets generated (logo + wallpaper + boot splash + v2 sounds/plymouth)."

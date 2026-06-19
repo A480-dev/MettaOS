@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=METTA Welcome
+Comment=First-run setup for METTA OS
+Exec=/usr/bin/metta-welcome
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=XFCE;
+Hidden=false

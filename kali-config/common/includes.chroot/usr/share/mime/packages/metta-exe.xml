@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-ms-dos-executable">
+    <comment>Windows executable</comment>
+    <glob pattern="*.exe"/>
+  </mime-type>
+  <mime-type type="application/x-apple-bundle">
+    <comment>macOS application bundle</comment>
+    <glob pattern="*.app"/>
+  </mime-type>
+  <mime-type type="application/x-mettapp">
+    <comment>METTA application package</comment>
+    <glob pattern="*.mettapp"/>
+  </mime-type>
+</mime-info>

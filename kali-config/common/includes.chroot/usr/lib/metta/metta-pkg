@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+"""METTA OS package manager for .mettapp bundles."""
+from __future__ import annotations
+
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+METTAPP_VERSION = "2"
+USER_DIR = Path.home() / ".local" / "share" / "mettapps"
+SYSTEM_DIR = Path("/opt/mettapps")
+DESKTOP_DIR = Path.home() / ".local" / "share" / "applications"
+SYSTEM_DESKTOP = Path("/usr/share/applications")
+
+
+def usage() -> None:
+    print(
+        "Uso: metta-pkg install <app.mettapp>\n"
+        "     metta-pkg remove <app-id>\n"
+        "     metta-pkg list\n"
+        "     metta-pkg info <app.mettapp|app-id>",
+        file=sys.stderr,
+    )
+
+
+def run(cmd: list[str], **kwargs) -> subprocess.CompletedProcess:
+    return subprocess.run(cmd, check=True, text=True, **kwargs)
+
+
+def extract_mettapp(path: Path, dest: Path) -> None:
+    run(["unsquashfs", "-force", "-dest", str(dest), str(path)])
+
+
+def read_manifest(root: Path) -> dict:
+    manifest = root / "META" / "manifest.json"
+    if not manifest.is_file():
+        raise SystemExit("FALLO: manifest.json ausente en el bundle")
+    return json.loads(manifest.read_text(encoding="utf-8"))
+
+
+def install_desktop(app_id: str, manifest: dict, app_root: Path) -> None:
+    name = manifest.get("name", app_id)
+    entry = manifest.get("entry", "AppRun")
+    icon = manifest.get("icon", "assets/icon.png")
+    icon_path = app_root / icon
+    desktop = (
+        f"[Desktop Entry]\n"
+        f"Type=Application\n"
+        f"Name={name}\n"
+        f"Exec={app_root / entry} %F\n"
+        f"Icon={icon_path if icon_path.is_file() else 'application-x-executable'}\n"
+        f"Categories=Utility;\n"
+        f"StartupNotify=true\n"
+        f"X-METTA-AppId={app_id}\n"
+    )
+    DESKTOP_DIR.mkdir(parents=True, exist_ok=True)
+    (DESKTOP_DIR / f"{app_id}.desktop").write_text(desktop, encoding="utf-8")
+
+
+def install_mettapp(path: Path, system: bool = False) -> None:
+    path = path.resolve()
+    if not path.is_file():
+        raise SystemExit(f"FALLO: no existe {path}")
+
+    with tempfile.TemporaryDirectory(prefix="metta-pkg-") as tmp:
+        tmp_path = Path(tmp)
+        extract_mettapp(path, tmp_path)
+        manifest = read_manifest(tmp_path)
+        app_id = manifest.get("id")
+        if not app_id:
+            raise SystemExit("FALLO: manifest sin id")
+        if manifest.get("mettapp_version") != METTAPP_VERSION:
+            print(f"WARN: mettapp_version={manifest.get('mettapp_version')} (esperado {METTAPP_VERSION})")
+
+        target_root = (SYSTEM_DIR if system else USER_DIR) / app_id
+        if target_root.exists():
+            shutil.rmtree(target_root)
+        target_root.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(tmp_path, target_root)
+        apprun = target_root / manifest.get("entry", "AppRun")
+        if apprun.is_file():
+            apprun.chmod(apprun.stat().st_mode | 0o111)
+        install_desktop(app_id, manifest, target_root)
+        print(f"OK: instalado {manifest.get('name', app_id)} → {target_root}")
+
+
+def remove_app(app_id: str, system: bool = False) -> None:
+    root = (SYSTEM_DIR if system else USER_DIR) / app_id
+    if root.exists():
+        shutil.rmtree(root)
+    desktop = DESKTOP_DIR / f"{app_id}.desktop"
+    if desktop.is_file():
+        desktop.unlink()
+    print(f"OK: eliminado {app_id}")
+
+
+def list_apps() -> None:
+    for base in (USER_DIR, SYSTEM_DIR):
+        if not base.is_dir():
+            continue
+        for entry in sorted(base.iterdir()):
+            manifest_path = entry / "META" / "manifest.json"
+            if manifest_path.is_file():
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                print(f"{manifest.get('id', entry.name)}\t{manifest.get('name', entry.name)}\t{manifest.get('version', '?')}")
+
+
+def info_target(target: str) -> None:
+    path = Path(target)
+    if path.suffix == ".mettapp" and path.is_file():
+        with tempfile.TemporaryDirectory(prefix="metta-pkg-info-") as tmp:
+            extract_mettapp(path, Path(tmp))
+            manifest = read_manifest(Path(tmp))
+            compat = {}
+            compat_path = Path(tmp) / "META" / "compat.json"
+            if compat_path.is_file():
+                compat = json.loads(compat_path.read_text(encoding="utf-8"))
+            print(json.dumps({"manifest": manifest, "compat": compat}, indent=2, ensure_ascii=False))
+        return
+
+    for base in (USER_DIR, SYSTEM_DIR):
+        manifest_path = base / target / "META" / "manifest.json"
+        if manifest_path.is_file():
+            print(manifest_path.read_text(encoding="utf-8"))
+            return
+    raise SystemExit(f"FALLO: app no encontrada: {target}")
+
+
+def main() -> None:
+    if len(sys.argv) < 2:
+        usage()
+        raise SystemExit(2)
+
+    cmd = sys.argv[1]
+    if cmd == "install":
+        if len(sys.argv) != 3:
+            usage()
+            raise SystemExit(2)
+        install_mettapp(Path(sys.argv[2]))
+    elif cmd == "remove":
+        if len(sys.argv) != 3:
+            usage()
+            raise SystemExit(2)
+        remove_app(sys.argv[2])
+    elif cmd == "list":
+        list_apps()
+    elif cmd == "info":
+        if len(sys.argv) != 3:
+            usage()
+            raise SystemExit(2)
+        info_target(sys.argv[2])
+    else:
+        usage()
+        raise SystemExit(2)
+
+
+if __name__ == "__main__":
+    main()

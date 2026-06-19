@@ -1,4 +1,4 @@
-## METTA OS — packages for all variants
+## METTA OS 2.0 — packages for all variants
 locales-all
 fonts-inter
 fonts-firacode
@@ -6,3 +6,29 @@ papirus-icon-theme
 plymouth-themes
 firefox-esr-l10n-es-es
 lightdm-gtk-greeter
+picom
+kitty
+conky-all
+xbindkeys
+wine
+winetricks
+bottles
+squashfs-tools
+nmap
+wireguard
+openvpn
+tor
+proxychains4
+zsh
+python3-scipy
+python3-soundfile
+calamares
+calamares-settings-debian
+pipewire
+pipewire-pulse
+wireplumber
+pavucontrol
+network-manager
+network-manager-gnome
+ufw
+dunst

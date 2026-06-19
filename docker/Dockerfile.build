@@ -6,10 +6,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates curl gnupg wget git \
     cdebootstrap debootstrap devscripts \
     qemu-system-x86 ovmf \
-    python3 python3-pillow python3-numpy \
+    python3 python3-pillow python3-numpy python3-scipy python3-soundfile \
     imagemagick librsvg2-bin \
     netcat-openbsd procps \
+    squashfs-tools \
     sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+# Node.js 20 + Rust (METTA Tauri apps)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
+    && . "$HOME/.cargo/env" && rustup default stable
+
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Tauri 2 build dependencies (Debian bookworm base)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev \
+    librsvg2-dev patchelf libssl-dev pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 # Kali archive keyring (required before using kali-rolling apt source)

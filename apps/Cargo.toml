@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = [
+  "metta-core",
+  "metta-control-center/src-tauri",
+  "metta-launcher/src-tauri",
+  "metta-notify/src-tauri",
+  "metta-scanner/src-tauri",
+  "metta-app-store/src-tauri",
+  "metta-updater/src-tauri",
+  "metta-converter/src-tauri",
+  "metta-vpn-manager/src-tauri",
+  "metta-netmap/src-tauri",
+  "metta-welcome/src-tauri",
+]

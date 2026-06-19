@@ -1,0 +1,9 @@
+* { color: #EAF5EE; background-color: #0A0E0C; font-family: "Inter"; }
+QWidget#main { background-color: #0A0E0C; }
+QPushButton { background-color: #1A2420; border: 1px solid rgba(234,245,238,0.08); border-radius: 8px; padding: 8px 20px; }
+QPushButton:hover { background-color: #2BE383; color: #0A0E0C; }
+QPushButton#next { background-color: #2BE383; color: #0A0E0C; font-weight: 600; }
+QLineEdit { background-color: #121815; border: 1px solid rgba(234,245,238,0.08); border-radius: 8px; padding: 6px 10px; }
+QLineEdit:focus { border-color: #2BE383; }
+QProgressBar { background-color: #1A2420; border-radius: 4px; height: 6px; }
+QProgressBar::chunk { background-color: #2BE383; border-radius: 4px; }

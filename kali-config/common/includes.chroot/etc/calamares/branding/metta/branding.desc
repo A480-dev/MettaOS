@@ -1,0 +1,16 @@
+componentName: metta
+welcomeStyleCalamares: false
+strings:
+  productName: "METTA OS"
+  shortProductName: "METTA OS"
+  version: "2.0.0"
+  versionedName: "METTA OS 2.0.0"
+  shortVersionedName: "METTA 2.0.0"
+  bootloaderEntryName: "METTA OS"
+  productUrl: "https://mettaos.dev"
+  supportUrl: "https://mettaos.dev/support"
+  releaseNotesUrl: "https://mettaos.dev/release-notes"
+images:
+  productLogo: "icon.png"
+  productIcon: "icon.png"
+  productWelcome: "splash.png"

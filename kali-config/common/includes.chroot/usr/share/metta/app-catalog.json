@@ -1,0 +1,34 @@
+[
+  {
+    "id": "nmap",
+    "name": "Nmap",
+    "description": "Escaneo de red y descubrimiento de hosts",
+    "category": "recon",
+    "install": "apt install -y nmap",
+    "icon": "network-wired"
+  },
+  {
+    "id": "metasploit",
+    "name": "Metasploit",
+    "description": "Framework de explotación",
+    "category": "exploit",
+    "install": "apt install -y metasploit-framework",
+    "icon": "target"
+  },
+  {
+    "id": "wireshark",
+    "name": "Wireshark",
+    "description": "Análisis de tráfico de red",
+    "category": "defense",
+    "install": "apt install -y wireshark",
+    "icon": "activity"
+  },
+  {
+    "id": "code",
+    "name": "VS Code",
+    "description": "Editor de código",
+    "category": "utility",
+    "install": "apt install -y code",
+    "icon": "code"
+  }
+]

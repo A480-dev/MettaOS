@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA Welcome
+Comment=METTA OS — METTA Welcome
+Exec=metta-welcome
+Icon=/usr/share/icons/metta/128x128/apps/mettaos.png
+Categories=System;
+Terminal=false
+StartupNotify=true

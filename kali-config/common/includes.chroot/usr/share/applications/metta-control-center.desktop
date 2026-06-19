@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA Control Center
+Comment=METTA OS — METTA Control Center
+Exec=metta-control-center
+Icon=/usr/share/icons/metta/128x128/apps/mettaos.png
+Categories=Settings;
+Terminal=false
+StartupNotify=true

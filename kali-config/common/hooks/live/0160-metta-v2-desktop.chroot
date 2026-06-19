@@ -1,0 +1,76 @@
+#!/bin/sh
+set -e
+
+# METTA OS 2.0 desktop integration
+update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/bin/kitty 100 2>/dev/null || true
+update-alternatives --set x-terminal-emulator /usr/bin/kitty 2>/dev/null || true
+
+ln -sf /usr/lib/metta/metta-pkg /usr/bin/metta-pkg 2>/dev/null || true
+chmod 755 /usr/lib/metta/metta-pkg 2>/dev/null || true
+
+for bin in metta-control-center metta-launcher metta-notify metta-scanner metta-terminal \
+           metta-app-store metta-updater metta-converter metta-vpn-manager metta-netmap \
+           metta-welcome metta-pkg-gui metta-notify-send; do
+  if [ ! -x "/usr/bin/$bin" ]; then
+    ln -sf /usr/lib/metta/app-stub.sh "/usr/bin/$bin"
+  fi
+  chmod 755 "/usr/bin/$bin" 2>/dev/null || true
+done
+
+systemctl enable metta-update-check.timer 2>/dev/null || true
+
+# Replace dunst notification service with metta-notify when available
+if [ -x /usr/bin/metta-notify ]; then
+  mkdir -p /usr/share/dbus-1/services
+  cat > /usr/share/dbus-1/services/org.freedesktop.Notifications.service << 'EOF'
+[D-BUS Service]
+Name=org.freedesktop.Notifications
+Exec=/usr/bin/metta-notify --daemon
+EOF
+fi
+
+# Sound theme index
+mkdir -p /usr/share/sounds/metta
+cat > /usr/share/sounds/metta/index.theme << 'EOF'
+[Sound Theme]
+Name=METTA
+Comment=METTA OS Sound Theme
+Directories=stereo
+EOF
+
+# Default notify config skeleton
+mkdir -p /etc/skel/.config/metta
+cat > /etc/skel/.config/metta/notify.json << 'EOF'
+{
+  "position": "bottom-right",
+  "margin": 20,
+  "maxVisible": 4,
+  "defaultTimeoutMs": 5000,
+  "warningTimeoutMs": 8000
+}
+EOF
+
+cat > /etc/skel/.config/metta/state.json << 'EOF'
+{
+  "version": "2.0.0",
+  "theme": "Metta-Dark",
+  "profile": null,
+  "hudEnabled": true,
+  "stealthMode": false
+}
+EOF
+
+# zsh default for live user (0031 also handles this)
+if [ -x /usr/bin/zsh ]; then
+  for skel_shell in /etc/skel /root; do
+    [ -d "$skel_shell" ] || continue
+    grep -q zsh "$skel_shell/.bashrc" 2>/dev/null || echo 'exec zsh -l' >> "$skel_shell/.bashrc" 2>/dev/null || true
+  done
+fi
+
+# Plymouth animated theme if frames exist
+if [ -f /usr/share/plymouth/themes/metta/logo_frame_000.png ] && command -v plymouth-set-default-theme >/dev/null 2>&1; then
+  plymouth-set-default-theme metta 2>/dev/null || true
+fi
+
+update-mime-database /usr/share/mime 2>/dev/null || true
