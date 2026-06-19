@@ -1,0 +1,38 @@
+#!/bin/sh
+# JetBrains Mono was removed from kali-rolling; install from Debian pool.
+set -e
+
+JB_VERSION="2.304+ds-6"
+JB_DEB="fonts-jetbrains-mono_${JB_VERSION}_all.deb"
+JB_URLS="
+http://deb.debian.org/debian/pool/main/f/fonts-jetbrains-mono/${JB_DEB}
+http://http.kali.org/pool/main/f/fonts-jetbrains-mono/${JB_DEB}
+"
+
+if dpkg -s fonts-jetbrains-mono >/dev/null 2>&1; then
+  exit 0
+fi
+
+TMP="/tmp/${JB_DEB}"
+rm -f "$TMP"
+
+for url in $JB_URLS; do
+  if wget -q -O "$TMP" "$url" 2>/dev/null || curl -fsSL -o "$TMP" "$url" 2>/dev/null; then
+    break
+  fi
+done
+
+if [ ! -s "$TMP" ]; then
+  echo "WARN: could not download fonts-jetbrains-mono; terminal will use Fira Code if available" >&2
+  rm -f "$TMP"
+  if command -v fc-match >/dev/null 2>&1; then
+    fc-match "JetBrains Mono" >/dev/null 2>&1 || true
+  fi
+  exit 0
+fi
+
+dpkg -i "$TMP" || apt-get install -f -y --no-install-recommends
+rm -f "$TMP"
+fc-cache -f >/dev/null 2>&1 || true
+
+echo "Installed fonts-jetbrains-mono from Debian pool"
