@@ -21,21 +21,43 @@ do
   done
 done
 
-# Ensure live config uses METTA OS hostname
 mkdir -p /etc/live/config.conf.d
 cat > /etc/live/config.conf.d/metta.conf << 'EOF'
 LIVE_HOSTNAME="metta"
-LIVE_USERNAME="kali"
+LIVE_USERNAME="metta"
 LIVE_USER_FULLNAME="METTA OS Live user"
 EOF
 rm -f /etc/live/config.conf.d/kali.conf
 
-# Disable kali-themes GRUB override on installed systems
+# Disable Kali motd at login
+if [ -f /etc/profile.d/kali.sh ]; then
+  sed -i 's/kali-motd/# metta: kali-motd disabled/' /etc/profile.d/kali.sh || rm -f /etc/profile.d/kali.sh
+fi
+
+# Visible application menu labels
+find /etc/xdg -type f \( -name '*.menu' -o -name '*.directory' \) 2>/dev/null | while read -r f; do
+  sed -i \
+    -e 's/Kali \&amp; OffSec Links/METTA OS Links/g' \
+    -e 's/Kali \& OffSec Links/METTA OS Links/g' \
+    -e 's/>Kali />METTA OS /g' \
+    "$f" || true
+done
+
+# System-wide theme defaults (override kali-themes package)
+for f in /etc/gtk-2.0/gtkrc \
+         /etc/xdg/konsolerc \
+         /etc/xdg/qterminal.org/qterminal.ini \
+         /etc/xdg/qt6ct/qt6ct.conf; do
+  [ -f "$f" ] && sed -i 's/Kali-Dark/Metta-Dark/g; s/Kali-Light/Metta-Dark/g' "$f" || true
+done
+
+[ -f /etc/xdg/kcm-about-distrorc ] && \
+  sed -i 's/emblem-kali/mettaos/g' /etc/xdg/kcm-about-distrorc || true
+
 if [ -f /etc/default/grub.d/kali-themes.cfg ]; then
   mv /etc/default/grub.d/kali-themes.cfg /etc/default/grub.d/kali-themes.cfg.disabled
 fi
 
-# Ensure os-release final state
 cat > /etc/os-release << 'EOF'
 PRETTY_NAME="METTA OS"
 NAME="METTA OS"
