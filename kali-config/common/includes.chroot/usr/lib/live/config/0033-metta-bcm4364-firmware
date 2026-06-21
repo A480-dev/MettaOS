@@ -1,0 +1,30 @@
+#!/bin/sh
+# Live boot: install BCM4364 firmware if missing (e.g. build had no network).
+
+SCRIPT=/usr/lib/metta/install-bcm4364-firmware.sh
+STAMP=/var/lib/live/config/metta-bcm4364-firmware
+
+[ -x "$SCRIPT" ] || exit 0
+
+if [ -f "$STAMP" ]; then
+    exit 0
+fi
+
+if [ -f /lib/firmware/brcm/brcmfmac4364b2-pcie.bin ] && \
+   [ -f /lib/firmware/brcm/brcmfmac4364b2-pcie.txt ]; then
+    touch "$STAMP"
+    exit 0
+fi
+
+# Need network to download firmware on live session
+if ! ping -c1 -W3 1.1.1.1 >/dev/null 2>&1 && ! ping -c1 -W3 8.8.8.8 >/dev/null 2>&1; then
+    echo "INFO: BCM4364 firmware pending (no network on live boot yet)"
+    exit 0
+fi
+
+if "$SCRIPT"; then
+    touch "$STAMP"
+    echo "INFO: BCM4364 firmware installed on live boot"
+fi
+
+exit 0

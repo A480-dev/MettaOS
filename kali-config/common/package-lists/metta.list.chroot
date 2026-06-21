@@ -6,6 +6,9 @@ papirus-icon-theme
 plymouth-themes
 firefox-esr-l10n-es-es
 lightdm-gtk-greeter
+labwc
+xwayland
+seatd
 picom
 kitty
 conky-all
@@ -14,6 +17,7 @@ wine
 cabextract
 p7zip-full
 zenity
+zstd
 squashfs-tools
 nmap
 wireguard-tools
@@ -24,7 +28,6 @@ zsh
 python3-scipy
 python3-soundfile
 calamares
-calamares-settings-debian
 pipewire
 pipewire-pulse
 wireplumber

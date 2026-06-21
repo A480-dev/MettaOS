@@ -1,0 +1,31 @@
+#!/bin/sh
+# METTA OS — configure Kali APT sources in the installed system (Calamares chroot).
+set -eu
+
+CHROOT=$(mount | grep ' on /tmp/calamares' | awk '{print $3}' | head -1)
+if [ -z "$CHROOT" ]; then
+    CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e 's#/proc##g' | head -1)
+fi
+if [ -z "$CHROOT" ] || [ ! -d "$CHROOT/etc" ]; then
+    echo "ERROR: Calamares target chroot not found" >&2
+    exit 1
+fi
+
+echo "INFO: writing kali.sources in $CHROOT"
+
+rm -f "$CHROOT/etc/apt/sources.list"
+find "$CHROOT/etc/apt/sources.list.d" -mindepth 1 -maxdepth 1 -delete 2>/dev/null || true
+cat > "$CHROOT/etc/apt/sources.list.d/kali.sources" << 'EOF'
+# See https://www.kali.org/docs/general-use/kali-apt-sources/
+Types: deb
+URIs: http://http.kali.org/kali/
+Suites: kali-rolling
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/kali-archive-keyring.gpg
+EOF
+
+if ! chroot "$CHROOT" apt-get update; then
+    echo "WARN: apt-get update failed (offline install may continue)" >&2
+fi
+
+exit 0

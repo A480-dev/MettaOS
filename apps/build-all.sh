@@ -9,6 +9,10 @@ WRAPPERS="$ROOT/kali-config/common/includes.chroot/usr/lib/metta/bin"
 
 mkdir -p "$DEST" "$WRAPPERS"
 
+THEME_SRC="$ROOT/kali-config/common/includes.chroot/usr/share/metta/metta-theme.css"
+THEME_LINK="$APPS_ROOT/metta-theme.css"
+ln -sf "$THEME_SRC" "$THEME_LINK"
+
 export PATH="$HOME/.cargo/bin:$PATH"
 command -v cargo >/dev/null || {
   if [ -z "${METTA_IN_DOCKER:-}" ] && [ -x "$ROOT/scripts/docker-run.sh" ] && command -v docker >/dev/null 2>&1; then

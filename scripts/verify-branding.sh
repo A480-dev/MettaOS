@@ -84,3 +84,9 @@ if [ -n "$HITS" ]; then
 fi
 
 echo "OK: sin branding Kali visible en rutas de usuario"
+
+if [ -n "$ISO" ] && [ -f "$ISO" ]; then
+  "$ROOT/scripts/verify-calamares.sh" "" "$ISO"
+elif [ -d "$CHROOT" ]; then
+  "$ROOT/scripts/verify-calamares.sh" "$CHROOT"
+fi

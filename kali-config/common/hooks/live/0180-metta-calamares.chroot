@@ -1,0 +1,51 @@
+#!/bin/sh
+set -e
+
+# METTA OS — Calamares installer integration (remove Debian defaults, enable METTA config)
+CALAMARES_ETC=/etc/calamares
+
+if [ ! -f "$CALAMARES_ETC/settings.conf" ]; then
+    echo "ERROR: missing $CALAMARES_ETC/settings.conf" >&2
+    exit 1
+fi
+
+if ! grep -q '^branding: metta' "$CALAMARES_ETC/settings.conf"; then
+    echo "ERROR: Calamares branding is not set to metta" >&2
+    exit 1
+fi
+
+# Remove Debian Calamares settings if the package was ever installed
+apt-get remove -y --purge calamares-settings-debian 2>/dev/null || true
+
+for f in \
+    "$CALAMARES_ETC/branding/debian" \
+    /etc/xdg/autostart/calamares-desktop-icon.desktop \
+    /usr/share/applications/calamares-install-debian.desktop \
+    /usr/bin/calamares-install-debian \
+    /usr/share/glib-2.0/schemas/96_calamares-settings-debian.gschema.override
+do
+    rm -rf "$f" 2>/dev/null || true
+done
+
+# Ensure METTA helpers and launcher are executable
+chmod 755 \
+    /usr/bin/calamares-install-metta \
+    /kali-finish-install \
+    /usr/lib/metta/run-on-x11-only.sh \
+    /usr/share/calamares/helpers/metta-sources-final \
+    /usr/share/calamares/helpers/metta-postinstall \
+    2>/dev/null || true
+
+# Desktop shortcut trust hint for Xfce
+chmod 755 /etc/skel/Desktop 2>/dev/null || true
+chmod 644 "/etc/skel/Desktop/Instalar METTA OS.desktop" 2>/dev/null || true
+
+if command -v glib-compile-schemas >/dev/null 2>&1; then
+    glib-compile-schemas /usr/share/glib-2.0/schemas 2>/dev/null || true
+fi
+
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl enable seatd.service 2>/dev/null || true
+fi
+
+echo "METTA Calamares configuration applied (Wayland session xfce-wayland)"

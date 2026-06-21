@@ -17,6 +17,7 @@
       </property>
       <property name="plugin-ids" type="array">
         <value type="int" value="1"/>
+        <value type="int" value="5"/>
         <value type="int" value="2"/>
         <value type="int" value="3"/>
         <value type="int" value="4"/>
@@ -28,5 +29,10 @@
     <property name="plugin-2" type="string" value="tasklist"/>
     <property name="plugin-3" type="string" value="separator"/>
     <property name="plugin-4" type="string" value="clock"/>
+    <property name="plugin-5" type="empty">
+      <property name="items" type="array">
+        <value type="string" value="calamares-install-metta.desktop"/>
+      </property>
+    </property>
   </property>
 </channel>

@@ -1,5 +1,5 @@
 componentName: metta
-welcomeStyleCalamares: false
+welcomeStyleCalamares: true
 strings:
   productName: "METTA OS"
   shortProductName: "METTA OS"
@@ -10,6 +10,15 @@ strings:
   productUrl: "https://mettaos.dev"
   supportUrl: "https://mettaos.dev/support"
   releaseNotesUrl: "https://mettaos.dev/release-notes"
+  welcomeTitle: "Bienvenido al instalador de METTA OS"
+  welcomeSubtitle: "Instala METTA OS en tu disco de forma sencilla."
+  welcomeDescription: "Este asistente copiará el sistema live a tu disco, configurará el arranque y creará tu usuario."
+  welcomeNext: "Comenzar"
+  welcomeBack: "Atrás"
+  welcomeCancel: "Cancelar"
+  welcomeNextTitle: "Continuar"
+  welcomeBackTitle: "Volver"
+  welcomeCancelTitle: "Salir del instalador"
 images:
   productLogo: "icon.png"
   productIcon: "icon.png"

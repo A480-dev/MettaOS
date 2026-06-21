@@ -1,0 +1,20 @@
+#!/bin/sh
+# Bake Apple BCM4364 Wi-Fi firmware into the live/install image.
+set -e
+
+SCRIPT=/usr/lib/metta/install-bcm4364-firmware.sh
+chmod 755 "$SCRIPT"
+
+if [ ! -x "$SCRIPT" ]; then
+    echo "ERROR: $SCRIPT not found" >&2
+    exit 1
+fi
+
+if "$SCRIPT"; then
+    echo "METTA BCM4364 firmware installed during image build"
+else
+    echo "WARN: BCM4364 firmware install failed at build time; will retry on first boot" >&2
+    exit 0
+fi
+
+systemctl enable metta-bcm4364-firmware.service 2>/dev/null || true

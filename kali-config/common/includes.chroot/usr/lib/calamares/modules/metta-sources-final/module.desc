@@ -1,0 +1,5 @@
+type:       "job"
+name:       "metta-sources-final"
+interface:  "process"
+command:    "/usr/share/calamares/helpers/metta-sources-final"
+timeout:    600

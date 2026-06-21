@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Instalar METTA OS
+Comment=Instala METTA OS en tu disco duro
+Exec=calamares-install-metta
+Icon=/usr/share/icons/metta/128x128/apps/mettaos.png
+Terminal=false
+Categories=System;
+OnlyShowIn=XFCE;

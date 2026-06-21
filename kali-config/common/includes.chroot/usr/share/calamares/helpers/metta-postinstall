@@ -1,0 +1,73 @@
+#!/bin/sh
+# METTA OS — post-install configuration inside Calamares target chroot.
+set -eu
+
+CHROOT=$(mount | grep ' on /tmp/calamares' | awk '{print $3}' | head -1)
+if [ -z "$CHROOT" ]; then
+    CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e 's#/proc##g' | head -1)
+fi
+if [ -z "$CHROOT" ] || [ ! -d "$CHROOT/etc" ]; then
+    echo "ERROR: Calamares target chroot not found" >&2
+    exit 1
+fi
+
+echo "INFO: METTA post-install in $CHROOT"
+
+# Kali finish script (APT sources, zsh, groups, terminal)
+if [ -x "$CHROOT/kali-finish-install" ]; then
+    chroot "$CHROOT" /kali-finish-install || {
+        echo "WARN: kali-finish-install returned non-zero" >&2
+    }
+    rm -f "$CHROOT/kali-finish-install"
+elif [ -x "$CHROOT/usr/lib/metta/kali-finish-install" ]; then
+    chroot "$CHROOT" /usr/lib/metta/kali-finish-install || true
+else
+    /usr/share/calamares/helpers/metta-sources-final
+fi
+
+# XFCE branding and defaults
+if [ -x "$CHROOT/usr/lib/metta/install-xfce-defaults.sh" ]; then
+    chroot "$CHROOT" /usr/lib/metta/install-xfce-defaults.sh || true
+fi
+
+# Default to XFCE on Wayland (labwc compositor via startxfce4 --wayland)
+mkdir -p "$CHROOT/etc/lightdm/lightdm.conf.d"
+cat > "$CHROOT/etc/lightdm/lightdm.conf.d/metta-wayland.conf" << 'EOF'
+[Seat:*]
+user-session=xfce-wayland
+EOF
+
+LIGHTDM_CONF="$CHROOT/etc/lightdm/lightdm.conf"
+if [ -f "$LIGHTDM_CONF" ]; then
+    if grep -q '^user-session=' "$LIGHTDM_CONF" 2>/dev/null; then
+        sed -i 's/^user-session=.*/user-session=xfce-wayland/' "$LIGHTDM_CONF"
+    elif grep -q '^\[Seat:\*\]' "$LIGHTDM_CONF"; then
+        sed -i '/^\[Seat:\*\]/a user-session=xfce-wayland' "$LIGHTDM_CONF"
+    fi
+fi
+
+# Remove live-only autostart entries from installed system
+for f in \
+    "$CHROOT/etc/xdg/autostart/calamares-desktop-icon.desktop" \
+    "$CHROOT/etc/xdg/autostart/live-settings.desktop"
+do
+    rm -f "$f"
+done
+
+# Ensure LightDM starts on boot
+if command -v systemctl >/dev/null 2>&1; then
+    chroot "$CHROOT" systemctl enable lightdm.service 2>/dev/null || true
+    chroot "$CHROOT" systemctl enable seatd.service 2>/dev/null || true
+    chroot "$CHROOT" systemctl enable metta-bcm4364-firmware.service 2>/dev/null || true
+fi
+
+# METTA OS identity on installed system
+if [ -f "$CHROOT/etc/os-release" ]; then
+    sed -i \
+        -e 's/Kali Linux/METTA OS/g' \
+        -e 's/Kali GNU\/Linux/METTA OS/g' \
+        "$CHROOT/etc/os-release" 2>/dev/null || true
+fi
+
+echo "INFO: METTA post-install complete (Wayland session xfce-wayland)"
+exit 0

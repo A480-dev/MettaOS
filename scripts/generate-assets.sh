@@ -88,8 +88,16 @@ fi
 python3 "$ROOT/assets/plymouth/generate-frames.py" 2>/dev/null || true
 CALAMARES_BR="$ROOT/kali-config/common/includes.chroot/etc/calamares/branding/metta"
 mkdir -p "$CALAMARES_BR"
-[ -f "$WALLPAPER_DST/metta-matrix-with-logo.png" ] && cp "$WALLPAPER_DST/metta-matrix-with-logo.png" "$CALAMARES_BR/splash.png"
-[ -f "$BRANDING_DST/png/icon/metta-icon-512.png" ] && cp "$BRANDING_DST/png/icon/metta-icon-512.png" "$CALAMARES_BR/icon.png"
+if [ -f "$WALLPAPER_DST/metta-matrix-with-logo.png" ]; then
+  cp "$WALLPAPER_DST/metta-matrix-with-logo.png" "$CALAMARES_BR/splash.png"
+elif [ -f "$WALLPAPER_DST/metta-matrix-default.png" ]; then
+  cp "$WALLPAPER_DST/metta-matrix-default.png" "$CALAMARES_BR/splash.png"
+fi
+if [ -f "$BRANDING_DST/png/icon/metta-icon-512.png" ]; then
+  cp "$BRANDING_DST/png/icon/metta-icon-512.png" "$CALAMARES_BR/icon.png"
+elif [ -f "$CALAMARES_BR/splash.png" ]; then
+  cp "$CALAMARES_BR/splash.png" "$CALAMARES_BR/icon.png"
+fi
 "$ROOT/scripts/generate-desktops.sh" "$ROOT/kali-config/common/includes.chroot/usr/share/applications"
 
 echo "Assets generated (logo + wallpaper + boot splash + v2 sounds/plymouth)."

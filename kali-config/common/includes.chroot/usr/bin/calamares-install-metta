@@ -1,0 +1,36 @@
+#!/bin/sh
+# METTA OS — launch Calamares installer (Wayland-native when available).
+set -eu
+
+if [ "$(id -u)" -eq 0 ]; then
+    exec calamares "$@"
+fi
+
+# Stale fstab from live-build breaks partitioning in Calamares
+if [ -f /etc/fstab ] && [ ! -f /etc/fstab.orig.calamares ]; then
+    sudo mv /etc/fstab /etc/fstab.orig.calamares
+fi
+
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+
+run_calamares() {
+    if [ "${XDG_SESSION_TYPE:-}" = "wayland" ] && [ -n "${WAYLAND_DISPLAY:-}" ]; then
+        pkexec env \
+            WAYLAND_DISPLAY="$WAYLAND_DISPLAY" \
+            XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" \
+            QT_QPA_PLATFORM=wayland \
+            calamares "$@"
+    else
+        export QT_QPA_PLATFORM=xcb
+        pkexec calamares "$@"
+    fi
+}
+
+run_calamares "$@"
+status=$?
+
+if [ -f /etc/fstab.orig.calamares ]; then
+    sudo mv /etc/fstab.orig.calamares /etc/fstab
+fi
+
+exit "$status"

@@ -1,0 +1,5 @@
+type:       "job"
+name:       "metta-postinstall"
+interface:  "process"
+command:    "/usr/share/calamares/helpers/metta-postinstall"
+timeout:    900

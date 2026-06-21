@@ -1,0 +1,14 @@
+[Unit]
+Description=METTA OS BCM4364 Wi-Fi firmware (Apple Broadcom)
+Documentation=https://mettaos.dev
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/lib/firmware/brcm/brcmfmac4364b2-pcie.bin
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/metta/install-bcm4364-firmware.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
