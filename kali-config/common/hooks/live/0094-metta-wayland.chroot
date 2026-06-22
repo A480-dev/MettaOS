@@ -1,0 +1,50 @@
+#!/bin/sh
+# Enable XFCE Wayland when labwc is available; otherwise keep XFCE on X11.
+set -e
+
+LIGHTDM_DROPIN=/etc/lightdm/lightdm.conf.d/metta-wayland.conf
+CALAMARES_DM=/etc/calamares/modules/displaymanager.conf
+
+try_install_labwc() {
+    if dpkg -s labwc >/dev/null 2>&1; then
+        return 0
+    fi
+    if apt-cache show labwc >/dev/null 2>&1; then
+        apt-get update
+        DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends labwc seatd || true
+    fi
+    dpkg -s labwc >/dev/null 2>&1
+}
+
+set_x11_session() {
+    echo "WARN: labwc not available in Kali rolling — using XFCE (X11) session" >&2
+    mkdir -p /etc/lightdm/lightdm.conf.d
+    cat > "$LIGHTDM_DROPIN" << 'EOF'
+[Seat:*]
+user-session=xfce
+EOF
+    if [ -f "$CALAMARES_DM" ]; then
+        sed -i \
+            -e 's/startxfce4 --wayland/startxfce4/g' \
+            -e 's/desktopFile: "xfce-wayland"/desktopFile: "xfce"/g' \
+            "$CALAMARES_DM"
+    fi
+}
+
+set_wayland_session() {
+    echo "INFO: labwc installed — XFCE Wayland session enabled"
+    mkdir -p /etc/lightdm/lightdm.conf.d
+    cat > "$LIGHTDM_DROPIN" << 'EOF'
+[Seat:*]
+user-session=xfce-wayland
+EOF
+    if command -v systemctl >/dev/null 2>&1; then
+        systemctl enable seatd.service 2>/dev/null || true
+    fi
+}
+
+if try_install_labwc; then
+    set_wayland_session
+else
+    set_x11_session
+fi

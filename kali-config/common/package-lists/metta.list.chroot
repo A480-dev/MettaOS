@@ -6,9 +6,7 @@ papirus-icon-theme
 plymouth-themes
 firefox-esr-l10n-es-es
 lightdm-gtk-greeter
-labwc
 xwayland
-seatd
 picom
 kitty
 conky-all
@@ -37,6 +35,8 @@ network-manager-gnome
 ufw
 dunst
 
+## Removed from Kali rolling (2026-06): labwc, seatd
+## → Wayland: hook 0094-metta-wayland.chroot (install labwc if returned to repos, else X11)
 ## Removed from Kali rolling (2026-03): winetricks, bottles
 ## → winetricks: hook 0170-metta-wine.chroot (upstream script)
 ## → bottles: replaced by metta-converter + wine

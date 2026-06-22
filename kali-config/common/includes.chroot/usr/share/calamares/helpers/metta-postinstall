@@ -30,19 +30,31 @@ if [ -x "$CHROOT/usr/lib/metta/install-xfce-defaults.sh" ]; then
     chroot "$CHROOT" /usr/lib/metta/install-xfce-defaults.sh || true
 fi
 
-# Default to XFCE on Wayland (labwc compositor via startxfce4 --wayland)
+# Default to XFCE Wayland when labwc is present; otherwise X11 (see hook 0094)
+if chroot "$CHROOT" dpkg -s labwc >/dev/null 2>&1; then
+    SESSION=xfce-wayland
+else
+    SESSION=xfce
+    if [ -f "$CHROOT/etc/calamares/modules/displaymanager.conf" ]; then
+        sed -i \
+            -e 's/startxfce4 --wayland/startxfce4/g' \
+            -e 's/desktopFile: "xfce-wayland"/desktopFile: "xfce"/g' \
+            "$CHROOT/etc/calamares/modules/displaymanager.conf"
+    fi
+fi
+
 mkdir -p "$CHROOT/etc/lightdm/lightdm.conf.d"
-cat > "$CHROOT/etc/lightdm/lightdm.conf.d/metta-wayland.conf" << 'EOF'
+cat > "$CHROOT/etc/lightdm/lightdm.conf.d/metta-wayland.conf" << EOF
 [Seat:*]
-user-session=xfce-wayland
+user-session=$SESSION
 EOF
 
 LIGHTDM_CONF="$CHROOT/etc/lightdm/lightdm.conf"
 if [ -f "$LIGHTDM_CONF" ]; then
     if grep -q '^user-session=' "$LIGHTDM_CONF" 2>/dev/null; then
-        sed -i 's/^user-session=.*/user-session=xfce-wayland/' "$LIGHTDM_CONF"
+        sed -i "s/^user-session=.*/user-session=$SESSION/" "$LIGHTDM_CONF"
     elif grep -q '^\[Seat:\*\]' "$LIGHTDM_CONF"; then
-        sed -i '/^\[Seat:\*\]/a user-session=xfce-wayland' "$LIGHTDM_CONF"
+        sed -i "/^\[Seat:\*\]/a user-session=$SESSION" "$LIGHTDM_CONF"
     fi
 fi
 
@@ -57,7 +69,9 @@ done
 # Ensure LightDM starts on boot
 if command -v systemctl >/dev/null 2>&1; then
     chroot "$CHROOT" systemctl enable lightdm.service 2>/dev/null || true
-    chroot "$CHROOT" systemctl enable seatd.service 2>/dev/null || true
+    if chroot "$CHROOT" dpkg -s labwc >/dev/null 2>&1; then
+        chroot "$CHROOT" systemctl enable seatd.service 2>/dev/null || true
+    fi
     chroot "$CHROOT" systemctl enable metta-bcm4364-firmware.service 2>/dev/null || true
 fi
 

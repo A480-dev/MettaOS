@@ -82,9 +82,9 @@ check_file etc/calamares/settings.conf "Calamares settings.conf" || FAILED=1
 check_grep etc/calamares/settings.conf '^branding: metta' "branding METTA en settings" || FAILED=1
 check_file etc/calamares/modules/unpackfs.conf "Calamares unpackfs" || FAILED=1
 check_file etc/calamares/modules/displaymanager.conf "Calamares displaymanager" || FAILED=1
-check_grep etc/calamares/modules/displaymanager.conf 'xfce-wayland' "sesión XFCE Wayland en displaymanager" || FAILED=1
-check_file etc/lightdm/lightdm.conf.d/metta-wayland.conf "LightDM Wayland default" || FAILED=1
-check_grep etc/lightdm/lightdm.conf.d/metta-wayland.conf 'xfce-wayland' "LightDM xfce-wayland" || FAILED=1
+check_grep etc/calamares/modules/displaymanager.conf 'startxfce4' "sesión XFCE en displaymanager" || FAILED=1
+check_file etc/lightdm/lightdm.conf.d/metta-wayland.conf "LightDM session default" || FAILED=1
+check_grep etc/lightdm/lightdm.conf.d/metta-wayland.conf 'user-session=' "LightDM user-session" || FAILED=1
 check_file etc/calamares/branding/metta/branding.desc "branding.desc METTA" || FAILED=1
 check_file etc/calamares/branding/metta/stylesheet.qss "stylesheet METTA" || FAILED=1
 check_file etc/calamares/branding/metta/icon.png "icono Calamares" || FAILED=1

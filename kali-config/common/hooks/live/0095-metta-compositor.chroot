@@ -38,16 +38,7 @@ X-GNOME-Autostart-enabled=true
 OnlyShowIn=XFCE;
 EOF
 
-# LightDM: XFCE Wayland session by default
-mkdir -p /etc/lightdm/lightdm.conf.d
-cat > /etc/lightdm/lightdm.conf.d/metta-wayland.conf << 'EOF'
-[Seat:*]
-user-session=xfce-wayland
-EOF
-
-if command -v systemctl >/dev/null 2>&1; then
-  systemctl enable seatd.service 2>/dev/null || true
-fi
+# LightDM session — hook 0094-metta-wayland.chroot sets xfce-wayland or xfce fallback
 
 if command -v xfconf-query >/dev/null 2>&1; then
   xfconf-query -c xfwm4 -p /general/use_compositing -n -t bool -s false 2>/dev/null || \
