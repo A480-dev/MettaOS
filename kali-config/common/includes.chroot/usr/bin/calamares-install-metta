@@ -1,36 +1,75 @@
 #!/bin/sh
-# METTA OS — launch Calamares installer (Wayland-native when available).
-set -eu
+# METTA OS — launch Calamares installer (live + installed).
+set -e
+
+CALAMARES=/usr/bin/calamares
+FSTAB_BAK=/etc/fstab.orig.calamares
+
+if [ ! -x "$CALAMARES" ]; then
+    echo "ERROR: calamares no está instalado" >&2
+    exit 1
+fi
 
 if [ "$(id -u)" -eq 0 ]; then
-    exec calamares "$@"
+    exec "$CALAMARES" "$@"
 fi
 
-# Stale fstab from live-build breaks partitioning in Calamares
-if [ -f /etc/fstab ] && [ ! -f /etc/fstab.orig.calamares ]; then
-    sudo mv /etc/fstab /etc/fstab.orig.calamares
-fi
+run_as_root() {
+    if command -v pkexec >/dev/null 2>&1; then
+        pkexec "$@" 2>/dev/null && return 0
+    fi
+    sudo "$@"
+}
 
-export QT_AUTO_SCREEN_SCALE_FACTOR=1
+prepare_fstab() {
+    [ -f /etc/fstab ] || return 0
+    [ -f "$FSTAB_BAK" ] && return 0
+    run_as_root mv /etc/fstab "$FSTAB_BAK" || true
+}
 
-run_calamares() {
-    if [ "${XDG_SESSION_TYPE:-}" = "wayland" ] && [ -n "${WAYLAND_DISPLAY:-}" ]; then
-        pkexec env \
-            WAYLAND_DISPLAY="$WAYLAND_DISPLAY" \
-            XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" \
-            QT_QPA_PLATFORM=wayland \
-            calamares "$@"
-    else
-        export QT_QPA_PLATFORM=xcb
-        pkexec calamares "$@"
+restore_fstab() {
+    [ -f "$FSTAB_BAK" ] || return 0
+    run_as_root mv "$FSTAB_BAK" /etc/fstab || true
+}
+
+prepare_display() {
+    export QT_AUTO_SCREEN_SCALE_FACTOR=1
+    # X11 / XWayland: allow root to show Calamares window
+    if [ -n "${DISPLAY:-}" ]; then
+        xhost +si:localuser:root 2>/dev/null || true
     fi
 }
 
-run_calamares "$@"
-status=$?
+launch_calamares() {
+    # Prefer X11 backend — most reliable on live XFCE
+    if [ -n "${DISPLAY:-}" ]; then
+        export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-xcb}"
+        run_as_root env DISPLAY="$DISPLAY" XAUTHORITY="${XAUTHORITY:-$HOME/.Xauthority}" \
+            QT_QPA_PLATFORM="$QT_QPA_PLATFORM" QT_AUTO_SCREEN_SCALE_FACTOR=1 \
+            "$CALAMARES" "$@"
+        return $?
+    fi
 
-if [ -f /etc/fstab.orig.calamares ]; then
-    sudo mv /etc/fstab.orig.calamares /etc/fstab
+    if [ "${XDG_SESSION_TYPE:-}" = "wayland" ] && [ -n "${WAYLAND_DISPLAY:-}" ]; then
+        run_as_root env \
+            WAYLAND_DISPLAY="$WAYLAND_DISPLAY" \
+            XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" \
+            QT_QPA_PLATFORM=wayland \
+            QT_AUTO_SCREEN_SCALE_FACTOR=1 \
+            "$CALAMARES" "$@"
+        return $?
+    fi
+
+    export QT_QPA_PLATFORM=xcb
+    run_as_root env QT_QPA_PLATFORM=xcb QT_AUTO_SCREEN_SCALE_FACTOR=1 "$CALAMARES" "$@"
+}
+
+prepare_fstab
+prepare_display
+status=0
+launch_calamares "$@" || status=$?
+if [ -n "${DISPLAY:-}" ]; then
+    xhost -si:localuser:root 2>/dev/null || true
 fi
-
+restore_fstab
 exit "$status"

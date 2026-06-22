@@ -30,6 +30,7 @@ done
 # Ensure METTA helpers and launcher are executable
 chmod 755 \
     /usr/bin/calamares-install-metta \
+    /usr/lib/metta/trust-installer-desktop.sh \
     /kali-finish-install \
     /usr/lib/metta/run-on-x11-only.sh \
     /usr/share/calamares/helpers/metta-sources-final \
@@ -38,7 +39,7 @@ chmod 755 \
 
 # Desktop shortcut trust hint for Xfce
 chmod 755 /etc/skel/Desktop 2>/dev/null || true
-chmod 644 "/etc/skel/Desktop/Instalar METTA OS.desktop" 2>/dev/null || true
+/usr/lib/metta/trust-installer-desktop.sh 2>/dev/null || true
 
 if command -v glib-compile-schemas >/dev/null 2>&1; then
     glib-compile-schemas /usr/share/glib-2.0/schemas 2>/dev/null || true

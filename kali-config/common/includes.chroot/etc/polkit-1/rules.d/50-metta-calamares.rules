@@ -1,0 +1,8 @@
+// Allow live user to run Calamares without polkit password prompts
+polkit.addRule(function(action, subject) {
+    if (subject.user == "metta" &&
+        action.id == "org.freedesktop.policykit.exec" &&
+        action.lookup("program") == "/usr/bin/calamares") {
+        return polkit.Result.YES;
+    }
+});

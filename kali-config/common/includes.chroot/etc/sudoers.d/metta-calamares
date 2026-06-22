@@ -1,0 +1,4 @@
+# Live/install: launch Calamares without password prompt (user metta)
+metta ALL=(root) NOPASSWD: /usr/bin/calamares
+metta ALL=(root) NOPASSWD: /bin/mv /etc/fstab /etc/fstab.orig.calamares
+metta ALL=(root) NOPASSWD: /bin/mv /etc/fstab.orig.calamares /etc/fstab
