@@ -29,10 +29,16 @@ mount_squashfs_from_iso() {
 }
 
 resolve_target() {
+  ISO="${2:-}"
+  if [ -z "$ISO" ] && [[ "${1:-}" == *.iso ]]; then
+    ISO="$1"
+  fi
   if [ -n "$ISO" ] && [ -f "$ISO" ]; then
     mount_squashfs_from_iso "$ISO"
-  elif [ -d "$CHROOT" ]; then
-    TARGET="$CHROOT"
+  elif [ -n "${1:-}" ] && [ -d "$1" ]; then
+    TARGET="$1"
+  elif [ -d "$ROOT/chroot" ]; then
+    TARGET="$ROOT/chroot"
   else
     echo "Uso: $0 [chroot_dir] [iso_file]" >&2
     exit 1

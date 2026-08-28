@@ -13,8 +13,14 @@ FINGERPRINT=""
 STAMP="$ROOT/images/.metta-build-fingerprint"
 
 verify_desktop() {
-  local target_args=("$@")
-  docker_run_priv "./scripts/verify-metta-desktop.sh" "${target_args[@]}"
+  if [ -n "${2:-}" ]; then
+    docker_run_priv "./scripts/verify-metta-desktop.sh '' ${2}"
+  elif [ -n "${1:-}" ]; then
+    docker_run_priv "./scripts/verify-metta-desktop.sh ${1}"
+  else
+    log "ERROR: verify_desktop needs chroot or ISO path" >&2
+    exit 1
+  fi
 }
 
 log() { echo "[ci-build] $*"; }
