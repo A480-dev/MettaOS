@@ -1,0 +1,9 @@
+polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.freedesktop.policykit.exec") == 0 &&
+        (action.lookup("program") == "/usr/lib/metta/metta-installer-engine.sh" ||
+         action.lookup("program") == "/usr/bin/systemctl")) {
+        if (subject.isInGroup("sudo") || subject.user == "metta") {
+            return polkit.Result.YES;
+        }
+    }
+});

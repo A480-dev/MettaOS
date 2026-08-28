@@ -1,0 +1,64 @@
+#!/bin/sh
+set -e
+
+# METTA OS KDE Plasma — display manager, SDDM branding, defaults
+if ! dpkg -s kali-desktop-kde >/dev/null 2>&1; then
+  exit 0
+fi
+
+if [ -x /usr/lib/metta/install-plasma-defaults.sh ]; then
+  /usr/lib/metta/install-plasma-defaults.sh
+fi
+
+WALLPAPER="/usr/share/backgrounds/metta/metta-matrix-with-logo.png"
+[ -f "$WALLPAPER" ] || WALLPAPER="/usr/share/backgrounds/metta/metta-matrix-default.png"
+
+if dpkg -s sddm >/dev/null 2>&1; then
+  if command -v deb-systemd-helper >/dev/null 2>&1; then
+    deb-systemd-helper enable sddm.service 2>/dev/null || true
+    deb-systemd-helper disable lightdm.service 2>/dev/null || true
+  fi
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl enable sddm.service 2>/dev/null || true
+  fi
+
+  mkdir -p /etc/sddm.conf.d
+  cat > /etc/sddm.conf.d/metta.conf << EOF
+[General]
+DisplayServer=x11
+GreeterEnvironment=QT_SCREEN_SCALE_FACTORS=1
+
+[Theme]
+Current=metta
+
+[Users]
+MaximumUid=60000
+MinimumUid=1000
+EOF
+
+  mkdir -p /usr/share/sddm/themes/metta
+  if [ -d /usr/share/sddm/themes/breeze ]; then
+    cp -a /usr/share/sddm/themes/breeze/. /usr/share/sddm/themes/metta/
+  fi
+  cat > /usr/share/sddm/themes/metta/metadata.desktop << 'EOF'
+[SddmGreeterTheme]
+Name=METTA OS
+Description=Greeter METTA OS con estética Matrix
+Type=sddm-theme
+Version=2.0
+MainScript=Main.qml
+ConfigFile=theme.conf
+EOF
+
+  cat > /usr/share/sddm/themes/metta/theme.conf << EOF
+[General]
+type=breeze
+background=${WALLPAPER}
+EOF
+fi
+
+if [ -f /etc/xdg/kcm-about-distrorc ]; then
+  sed -i 's/emblem-kali/mettaos/g' /etc/xdg/kcm-about-distrorc || true
+fi
+
+exit 0

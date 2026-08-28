@@ -1,0 +1,16 @@
+## Live image with KDE Plasma and large tool selection
+##
+## $ ./build.sh --variant kde-large
+
+## Live images always want these
+kali-linux-core
+kali-desktop-live
+
+## Graphical desktop
+kali-desktop-kde
+
+## Metapackages
+kali-linux-large
+
+## Extra Kali packages/tools/applications
+#<package>

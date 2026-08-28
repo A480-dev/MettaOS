@@ -3,20 +3,26 @@ locales-all
 fonts-inter
 fonts-firacode
 papirus-icon-theme
+breeze-cursor-theme
 plymouth-themes
 firefox-esr-l10n-es-es
-lightdm-gtk-greeter
 xwayland
-picom
+konsole
 kitty
-conky-all
-xbindkeys
 wine
 cabextract
 p7zip-full
 zenity
 zstd
 squashfs-tools
+parted
+dosfstools
+e2fsprogs
+grub-efi-amd64-bin
+grub-pc-bin
+efibootmgr
+policykit-1
+pkexec
 nmap
 wireguard-tools
 openvpn
@@ -25,18 +31,16 @@ proxychains4
 zsh
 python3-scipy
 python3-soundfile
-calamares
 pipewire
 pipewire-pulse
 wireplumber
 pavucontrol
 network-manager
-network-manager-gnome
 ufw
-dunst
+plasma-systemmonitor
+libwebkit2gtk-4.1-0
+libjavascriptcoregtk-4.1-0
 
-## Removed from Kali rolling (2026-06): labwc, seatd
-## → Wayland: hook 0094-metta-wayland.chroot (install labwc if returned to repos, else X11)
 ## Removed from Kali rolling (2026-03): winetricks, bottles
 ## → winetricks: hook 0170-metta-wine.chroot (upstream script)
 ## → bottles: replaced by metta-converter + wine

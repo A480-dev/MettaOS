@@ -9,4 +9,5 @@ cd "$ROOT"
     lb-build.sh build.sh docker/Dockerfile.build \
     -type f 2>/dev/null | sort
   echo "variant=${METTA_VARIANT:-default}"
+  echo "build_apps=${METTA_BUILD_APPS:-1}"
 } | sha256sum | awk '{print $1}'

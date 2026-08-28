@@ -12,4 +12,5 @@ members = [
   "metta-vpn-manager/src-tauri",
   "metta-netmap/src-tauri",
   "metta-welcome/src-tauri",
+  "metta-installer/src-tauri",
 ]

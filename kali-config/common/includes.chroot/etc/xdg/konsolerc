@@ -1,0 +1,16 @@
+[Desktop Entry]
+DefaultProfile=Metta-Dark.profile
+
+[General]
+ColorScheme=Metta-Dark
+
+[Metta-Dark.profile]
+Command=/bin/zsh
+Name=Metta-Dark
+Parent=FALLBACK/
+SemanticInput=Metta-Dark
+SemanticNormal=Metta-Dark
+
+[UiSettings]
+ColorScheme=Metta-Dark
+Font=Inter,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1

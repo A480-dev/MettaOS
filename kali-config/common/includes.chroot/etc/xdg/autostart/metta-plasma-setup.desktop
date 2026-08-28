@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA OS Plasma Setup
+Comment=Apply METTA OS wallpaper and theme on live session start
+Exec=/usr/lib/metta/plasma-live-setup.sh
+OnlyShowIn=KDE;
+X-KDE-autostart-after=panel
+NoDisplay=true
+StartupNotify=false

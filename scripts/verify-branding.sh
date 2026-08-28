@@ -21,8 +21,9 @@ SCAN_REL_PATHS=(
   etc/neofetch
   etc/firefox-esr
   usr/share/applications
-  usr/share/xfce4
-  usr/share/lightdm
+  usr/share/color-schemes
+  etc/sddm.conf.d
+  usr/share/sddm
   usr/share/plymouth
   usr/share/metta
   usr/share/pixmaps
@@ -86,7 +87,7 @@ fi
 echo "OK: sin branding Kali visible en rutas de usuario"
 
 if [ -n "$ISO" ] && [ -f "$ISO" ]; then
-  "$ROOT/scripts/verify-calamares.sh" "" "$ISO"
+  "$ROOT/scripts/verify-metta-installer.sh" "" "$ISO"
 elif [ -d "$CHROOT" ]; then
-  "$ROOT/scripts/verify-calamares.sh" "$CHROOT"
+  "$ROOT/scripts/verify-metta-installer.sh" "$CHROOT"
 fi

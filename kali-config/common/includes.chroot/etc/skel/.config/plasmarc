@@ -1,0 +1,6 @@
+[Theme]
+name=default
+lookAndFeelPackage=org.mettaos.desktop
+
+[Wallpaper]
+Image=/usr/share/backgrounds/metta/metta-matrix-with-logo.png

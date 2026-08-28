@@ -1,0 +1,2 @@
+metta ALL=(root) NOPASSWD: /usr/lib/metta/metta-installer-engine.sh
+metta ALL=(root) NOPASSWD: /usr/bin/systemctl reboot

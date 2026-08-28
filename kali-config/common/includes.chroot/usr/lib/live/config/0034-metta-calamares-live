@@ -1,5 +1,0 @@
-#!/bin/sh
-# Live boot: trust installer desktop icon for the live user.
-[ -x /usr/lib/metta/trust-installer-desktop.sh ] || exit 0
-/usr/lib/metta/trust-installer-desktop.sh
-exit 0

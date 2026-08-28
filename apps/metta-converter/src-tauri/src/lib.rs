@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use tauri::{Emitter, Window};
+use tauri::{Emitter, WebviewWindow};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConvertConfig {
@@ -12,7 +12,7 @@ pub struct ConvertConfig {
     pub icon_path: Option<String>,
 }
 
-fn emit(window: &Window, pct: u8, msg: &str) {
+fn emit(window: &WebviewWindow, pct: u8, msg: &str) {
     let _ = window.emit("convert_progress", serde_json::json!({ "pct": pct, "msg": msg }));
 }
 
@@ -82,7 +82,7 @@ esac
 async fn convert_to_mettapp(
     source: String,
     config: ConvertConfig,
-    window: Window,
+    window: WebviewWindow,
 ) -> Result<String, String> {
     let src = PathBuf::from(&source);
     if !src.exists() {

@@ -2,7 +2,8 @@
 set -e
 
 if command -v update-alternatives >/dev/null 2>&1; then
-  update-alternatives --set x-cursor-theme default 2>/dev/null || true
+  update-alternatives --set x-cursor-theme breeze_cursors 2>/dev/null || \
+    update-alternatives --set x-cursor-theme default 2>/dev/null || true
 fi
 
 if [ -d /etc/skel/.config ]; then
@@ -10,6 +11,6 @@ if [ -d /etc/skel/.config ]; then
   cp -a /etc/skel/.config/. /root/.config/ 2>/dev/null || true
 fi
 
-if [ -x /usr/lib/metta/install-xfce-defaults.sh ]; then
-  /usr/lib/metta/install-xfce-defaults.sh
+if [ -x /usr/lib/metta/install-plasma-defaults.sh ]; then
+  /usr/lib/metta/install-plasma-defaults.sh
 fi

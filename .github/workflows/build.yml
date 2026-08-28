@@ -11,11 +11,12 @@ on:
       variant:
         description: 'live-build variant'
         required: true
-        default: xfce-light
+        default: kde-light
         type: choice
         options:
-          - xfce-light
+          - kde-light
           - default
+          - kde-large
       run_tests:
         description: 'Run QEMU smoke test'
         required: true
@@ -67,7 +68,7 @@ jobs:
               run_tests=false
             fi
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
-            variant=xfce-light
+            variant=kde-light
           elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
             variant=default
           fi
@@ -131,6 +132,7 @@ jobs:
       - name: CI build pipeline
         env:
           METTA_VARIANT: ${{ steps.cfg.outputs.variant }}
+          METTA_BUILD_APPS: "1"
           METTA_RUN_TESTS: ${{ steps.cfg.outputs.run_tests == 'true' && '1' || '0' }}
           METTA_TEST_TIMEOUT: '90'
           METTA_TEST_UEFI: '0'

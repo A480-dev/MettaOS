@@ -23,7 +23,7 @@ async fn refresh_upgrades() -> Result<Vec<UpgradePkg>, String> {
 }
 
 #[tauri::command]
-async fn upgrade_all(window: tauri::Window) -> Result<String, String> {
+async fn upgrade_all(window: tauri::WebviewWindow) -> Result<String, String> {
     let _ = window.emit("upgrade_progress", "Actualizando paquetes…");
     run_shell("sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y").await
 }

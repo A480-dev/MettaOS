@@ -83,7 +83,7 @@ fn search(query: String) -> Vec<LaunchItem> {
     for item in &mut items {
         buf.clear();
         let hay = Utf32Str::new(&item.label, &mut buf);
-        item.score = pattern.score(hay, &mut matcher);
+        item.score = pattern.score(hay, &mut matcher).unwrap_or(0) as i32;
     }
     items.retain(|i| i.score > 0);
     items.sort_by(|a, b| b.score.cmp(&a.score));

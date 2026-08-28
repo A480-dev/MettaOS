@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Instalar METTA OS
+GenericName=Instalador METTA OS
+Comment=Instala METTA OS en tu disco duro
+Exec=metta-installer
+TryExec=/usr/bin/metta-installer
+Icon=/usr/share/icons/metta/128x128/apps/mettaos.png
+Terminal=false
+Categories=Qt;System;
+Keywords=install;metta;instalador;
+StartupWMClass=metta-installer
+StartupNotify=true
+OnlyShowIn=KDE;

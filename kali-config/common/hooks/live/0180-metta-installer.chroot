@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+# METTA OS installer scripts
+chmod 755 \
+  /usr/lib/metta/metta-installer-engine.sh \
+  /usr/lib/metta/metta-system-postinstall.sh \
+  /usr/bin/metta-install \
+  2>/dev/null || true
+
+if [ -x /usr/lib/metta/install-plasma-defaults.sh ]; then
+  /usr/lib/metta/install-plasma-defaults.sh
+fi
+
+echo "METTA installer configuration applied"

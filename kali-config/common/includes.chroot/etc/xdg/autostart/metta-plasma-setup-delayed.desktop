@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=METTA OS Plasma Setup (delayed)
+Comment=Re-apply METTA OS wallpaper after Plasma finishes loading
+Exec=/bin/sh -c 'sleep 5; /usr/lib/metta/plasma-live-setup.sh'
+OnlyShowIn=KDE;
+X-KDE-autostart-after=panel
+NoDisplay=true
+StartupNotify=false

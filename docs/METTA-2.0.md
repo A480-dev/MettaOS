@@ -49,7 +49,7 @@ METTA_BUILD_APPS=1 ./apps/build-all.sh
 ./scripts/ci-build.sh
 ```
 
-En CI, activa `METTA_BUILD_APPS=1` para compilar binarios nativos. Sin eso, la ISO usa stubs (`/usr/lib/metta/app-stub.sh`).
+En CI, `METTA_BUILD_APPS=1` compila binarios Tauri por defecto. Con `METTA_BUILD_APPS=0` la ISO usa stubs (`/usr/lib/metta/app-stub.sh`).
 
 ## Formato .mettapp
 
@@ -74,9 +74,9 @@ Scaffold nueva app: `./apps/scaffold-app.sh metta-nueva-app "METTA Nueva App"`
 
 ## Integración live
 
-- Hooks: `0095` (Picom), `0160` (v2 desktop), `0150`/`0990` (Xfce)
+- Hooks: `0100` (Plasma/SDDM), `0160` (v2 desktop), `0150`/`0990` (tema METTA)
 - Paquetes extra: `kali-config/common/package-lists/metta.list.chroot`
-- Calamares: `etc/calamares/branding/metta/`
+- Instalador: `metta-installer` (Tauri) + `metta-installer-engine.sh`
 
 ## Darling (macOS .app)
 

@@ -1,0 +1,39 @@
+#!/bin/sh
+# Ensure live user inherits METTA Plasma defaults from skel.
+
+. /usr/lib/live/config.sh
+
+Init() {
+  if component_was_executed "metta-plasma-skel"; then
+    exit 0
+  fi
+  echo -n " metta-plasma-skel"
+}
+
+Config() {
+  user="${LIVE_USERNAME:-metta}"
+  home="$(getent passwd "$user" 2>/dev/null | cut -d: -f6)"
+  [ -n "$home" ] || exit 0
+
+  if [ -d /etc/skel/.config ]; then
+    mkdir -p "$home/.config"
+    cp -a /etc/skel/.config/. "$home/.config/" 2>/dev/null || true
+  fi
+
+  for f in kdeglobals plasmarc kwinrc konsolerc plasma-org.kde.plasma.desktop-appletsrc; do
+    skel_cfg="/etc/skel/.config/$f"
+    user_cfg="$home/.config/$f"
+    [ -f "$skel_cfg" ] && mkdir -p "$home/.config" && cp -f "$skel_cfg" "$user_cfg"
+  done
+
+  if [ -f /etc/skel/.config/gtk-3.0/settings.ini ]; then
+    mkdir -p "$home/.config/gtk-3.0"
+    cp -f /etc/skel/.config/gtk-3.0/settings.ini "$home/.config/gtk-3.0/settings.ini"
+  fi
+
+  chown -R "$user:$user" "$home/.config" 2>/dev/null || true
+  touch /var/lib/live/config/metta-plasma-skel
+}
+
+Init
+Config

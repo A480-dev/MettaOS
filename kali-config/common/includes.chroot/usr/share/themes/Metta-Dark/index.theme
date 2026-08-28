@@ -8,5 +8,5 @@ Encoding=UTF-8
 GtkTheme=Metta-Dark
 MetacityTheme=Metta-Dark
 IconTheme=Papirus-Dark
-CursorTheme=default
+CursorTheme=breeze_cursors
 ButtonLayout=menu:minimize,maximize,close

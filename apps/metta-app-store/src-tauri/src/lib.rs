@@ -1,7 +1,7 @@
 use metta_core::{catalog_path, run_shell};
 use serde::{Deserialize, Serialize};
 use std::fs;
-use tauri::{Emitter, Window};
+use tauri::{Emitter, WebviewWindow};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CatalogApp {
@@ -26,7 +26,7 @@ async fn get_installed() -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
-async fn install_tool(app_id: String, window: Window) -> Result<(), String> {
+async fn install_tool(app_id: String, window: WebviewWindow) -> Result<(), String> {
     let apps = list_catalog()?;
     let app = apps.into_iter().find(|a| a.id == app_id).ok_or("App no encontrada")?;
     let _ = window.emit("install_progress", format!("Instalando {}…", app.name));

@@ -12,6 +12,11 @@ ISO=""
 FINGERPRINT=""
 STAMP="$ROOT/images/.metta-build-fingerprint"
 
+verify_desktop() {
+  local target_args=("$@")
+  docker_run_priv "./scripts/verify-metta-desktop.sh" "${target_args[@]}"
+}
+
 log() { echo "[ci-build] $*"; }
 
 docker_run() {
@@ -112,9 +117,11 @@ else
   docker_run "./scripts/generate-assets.sh"
 fi
 
-if [ "${METTA_BUILD_APPS:-0}" = "1" ]; then
+if [ "${METTA_BUILD_APPS:-1}" = "1" ]; then
   log "Building METTA Tauri apps..."
   docker_run "cd apps && ./build-all.sh"
+  log "Cleaning Tauri build caches to free disk for live-build..."
+  docker_run "rm -rf apps/target apps/*/src-tauri/target apps/*/node_modules apps/*/dist"
 else
   log "Skipping Tauri apps (METTA_BUILD_APPS=0). Stubs will be used in ISO."
 fi
@@ -125,7 +132,7 @@ reuse_iso=0
 if [ -n "$ISO" ] && [ -f "$ISO" ] && [ "$CACHED_FP" = "$FINGERPRINT" ]; then
   if [ "${METTA_SKIP_BUILD:-0}" = "1" ] || [ "${METTA_REUSE_ISO:-0}" = "1" ]; then
     log "Validating cached ISO before reuse..."
-    if docker_run_priv "./scripts/verify-metta-desktop.sh '' ${ISO#"$ROOT"/}"; then
+    if verify_desktop '' "${ISO#"$ROOT"/}"; then
       reuse_iso=1
     else
       log "WARN: cached ISO failed desktop verification — forcing full rebuild"
@@ -171,8 +178,10 @@ fix_workspace_perms
 if [ -d "$ROOT/chroot" ] && [ "${METTA_SKIP_CHROOT_VERIFY:-0}" != "1" ]; then
   log "Verifying branding on chroot..."
   docker_run_priv "./scripts/verify-branding.sh chroot/"
+  log "Verifying METTA installer on chroot..."
+  docker_run_priv "./scripts/verify-metta-installer.sh chroot/"
   log "Verifying METTA desktop on chroot..."
-  docker_run_priv "./scripts/verify-metta-desktop.sh chroot/"
+  verify_desktop chroot/
 else
   log "Skipping chroot verify (no chroot/ or METTA_SKIP_CHROOT_VERIFY=1)"
 fi
@@ -181,7 +190,7 @@ log "Verifying branding on ISO..."
 docker_run_priv "./scripts/verify-branding.sh '' ${ISO#"$ROOT"/}"
 
 log "Verifying METTA desktop on ISO..."
-docker_run_priv "./scripts/verify-metta-desktop.sh '' ${ISO#"$ROOT"/}"
+verify_desktop '' "${ISO#"$ROOT"/}"
 
 if [ "$RUN_TESTS" = "1" ]; then
   log "QEMU smoke test..."

@@ -14,6 +14,7 @@ THEME_LINK="$APPS_ROOT/metta-theme.css"
 ln -sf "$THEME_SRC" "$THEME_LINK"
 
 export PATH="$HOME/.cargo/bin:$PATH"
+export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-$APPS_ROOT/target}"
 command -v cargo >/dev/null || {
   if [ -z "${METTA_IN_DOCKER:-}" ] && [ -x "$ROOT/scripts/docker-run.sh" ] && command -v docker >/dev/null 2>&1; then
     echo "[build-all] Rust no encontrado — compilando dentro de Docker..."
@@ -49,7 +50,21 @@ APPS=(
   metta-vpn-manager
   metta-netmap
   metta-welcome
+  metta-installer
 )
+
+ICON_SRC="$ROOT/kali-config/common/includes.chroot/usr/share/icons/metta/256x256/apps/mettaos.png"
+ensure_app_icons() {
+  local app dir
+  for app in "${APPS[@]}"; do
+    dir="$APPS_ROOT/$app/src-tauri/icons"
+    mkdir -p "$dir"
+    if [ ! -f "$dir/icon.png" ] && [ -f "$ICON_SRC" ]; then
+      cp "$ICON_SRC" "$dir/icon.png"
+    fi
+  done
+}
+ensure_app_icons
 
 build_app() {
   local name="$1"
@@ -60,7 +75,9 @@ build_app() {
     npm ci --prefer-offline --no-audit --no-fund 2>/dev/null || npm install --no-audit --no-fund
   fi
   npm run tauri build
-  local bin="$dir/src-tauri/target/release/$name"
+  local bin="$CARGO_TARGET_DIR/release/$name"
+  [ -f "$bin" ] || bin="$CARGO_TARGET_DIR/release/${name//-/_}"
+  [ -f "$bin" ] || bin="$dir/src-tauri/target/release/$name"
   [ -f "$bin" ] || bin="$dir/src-tauri/target/release/${name//-/_}"
   [ -f "$bin" ] || { echo "FALLO: binario no encontrado para $name" >&2; exit 1; }
   install -m 755 "$bin" "$DEST/$name"

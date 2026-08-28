@@ -1,6 +1,6 @@
 use metta_core::read_state;
 use std::collections::HashMap;
-use tauri::Manager;
+use tauri::Emitter;
 
 #[tauri::command]
 fn load_settings(module: String) -> HashMap<String, String> {

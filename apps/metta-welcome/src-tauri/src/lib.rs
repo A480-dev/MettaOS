@@ -1,6 +1,6 @@
-use metta_core::{read_state, write_state, MettaState};
+use metta_core::{read_state, write_state};
 use std::fs;
-use std::path::PathBuf;
+use tauri::Manager;
 
 #[tauri::command]
 async fn finish_welcome(profile: String, wine: bool) -> Result<(), String> {

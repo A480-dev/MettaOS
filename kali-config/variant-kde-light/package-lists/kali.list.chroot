@@ -1,0 +1,16 @@
+## Live image with KDE Plasma (minimal tools)
+##
+## $ ./build.sh --variant kde-light
+
+## Live images always want these
+kali-linux-core
+kali-desktop-live
+
+## Graphical desktop
+kali-desktop-kde
+
+## Metapackages — desktop only, no tool bundles
+#kali-linux-<selection>
+
+## Extra Kali packages/tools/applications
+#<package>

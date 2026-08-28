@@ -1,0 +1,128 @@
+@import "../../../metta-theme.css";
+
+:root {
+  --installer-glow: rgba(43, 227, 131, 0.15);
+}
+
+body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, var(--installer-glow), transparent),
+    var(--surface-base);
+}
+
+.app-shell {
+  padding: 32px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.app-shell h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+  color: var(--accent-primary);
+}
+
+.app-shell p {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.step-indicator {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+}
+
+.step-dot.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 12px var(--installer-glow);
+}
+
+.disk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.disk-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-primary);
+  width: 100%;
+}
+
+.disk-option:hover,
+.disk-option.selected {
+  border-color: var(--accent-primary);
+  background: var(--surface-elevated);
+}
+
+.disk-option strong {
+  font-family: var(--font-mono);
+  color: var(--accent-secondary);
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.progress-log {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  max-height: 220px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  color: var(--accent-primary);
+}
+
+.warn-box {
+  background: rgba(242, 179, 61, 0.1);
+  border: 1px solid var(--warning);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin: 16px 0;
+  color: var(--warning);
+  font-size: 0.875rem;
+}
+
+.done-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}

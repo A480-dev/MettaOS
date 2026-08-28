@@ -1,6 +1,6 @@
 # METTA OS — fork de kali-live
 
-Distro derivada de Kali Linux con identidad propia **METTA OS** (v2.0.0): estética Matrix, español latinoamericano, ecosistema de apps Tauri y branding completo.
+Distro derivada de Kali Linux con identidad propia **METTA OS** (v2.0.0): estética Matrix, **KDE Plasma** como escritorio, español latinoamericano, ecosistema de apps Tauri y branding completo.
 
 > **METTA OS 2.0:** ver [docs/METTA-2.0.md](docs/METTA-2.0.md) para arquitectura de apps, `.mettapp` y orden de build.
 
@@ -12,14 +12,14 @@ El build oficial corre en **GitHub Actions** — no necesitas Kali ni Docker loc
 
 | Evento | Variante | Tests |
 |--------|----------|-------|
-| Push a `main` | `default` (Xfce + tools) | QEMU BIOS |
-| Pull request | `xfce-light` (más rápido) | QEMU BIOS |
+| Push a `main` | `default` (Plasma + tools) | QEMU BIOS |
+| Pull request | `kde-light` (más rápido) | QEMU BIOS |
 | Tag `v*` | `default` | QEMU + Release |
 
 ### Manual (workflow_dispatch)
 
 1. Ve a **Actions → Build METTA OS → Run workflow**
-2. Elige variante (`xfce-light` o `default`)
+2. Elige variante (`kde-light`, `default` o `kde-large`)
 3. Al terminar, descarga el artefacto `metta-os-<variant>-amd64`
 
 ### Release
@@ -37,7 +37,7 @@ El workflow publica la ISO en GitHub Releases automáticamente.
 
 ```bash
 chmod +x scripts/ci-build.sh
-METTA_VARIANT=xfce-light ./scripts/ci-build.sh
+METTA_VARIANT=kde-light ./scripts/ci-build.sh
 ```
 
 ## Build local en Arch (sin Docker para assets)
@@ -82,6 +82,15 @@ Instalar también `kali-archive-keyring` y `live-build` parcheado de Kali (ver [
 ./scripts/ci-build.sh
 ```
 
+### Variantes
+
+| Variante | Alias | Contenido |
+|----------|-------|-----------|
+| `default` | — | KDE Plasma + `kali-linux-default` |
+| `kde-light` | `light` | KDE Plasma, sin metapaquetes de tools |
+| `kde-large` | `large` | KDE Plasma + `kali-linux-large` |
+| `kde-everything` | `everything` | KDE Plasma + todas las tools Kali |
+
 ### Variables de entorno
 
 | Variable | Default | Descripción |
@@ -99,9 +108,10 @@ Instalar también `kali-archive-keyring` y `live-build` parcheado de Kali (ver [
 ```bash
 ./scripts/generate-assets.sh
 ./lb-build.sh --variant default --verbose
-./test-iso.sh images/metta-os-1.0-amd64.iso
-./scripts/verify-branding.sh '' images/metta-os-1.0-amd64.iso
-sha256sum images/metta-os-1.0-amd64.iso > images/metta-os-1.0-amd64.iso.sha256
+./lb-build.sh --variant kde-light --verbose
+./test-iso.sh images/metta-os-2.0-amd64.iso
+./scripts/verify-branding.sh '' images/metta-os-2.0-amd64.iso
+sha256sum images/metta-os-2.0-amd64.iso > images/metta-os-2.0-amd64.iso.sha256
 ```
 
 ## Estructura del proyecto
@@ -141,7 +151,7 @@ Regenerar logo y wallpaper (fuente: `assets/source/metta-logo-source.png`):
 | **1a** GRUB (tema) | `./preview/preview-grub.sh` | ~30s |
 | **1a′** GRUB (boot ISO) | `./preview/preview-grub.sh --boot-iso` | requiere ISO |
 | **1b** Plymouth | `sudo ./preview/preview-plymouth.sh` | ~10s |
-| **1c** Escritorio Xfce | `./preview/preview-desktop.sh` | requiere chroot (fallback → mockup) |
+| **1c** Escritorio Plasma | `./preview/preview-desktop.sh` | requiere chroot (fallback → mockup) |
 
 ### Dependencias preview (Arch Linux)
 
@@ -162,7 +172,7 @@ Ejecuta `generate-assets.sh` antes del preview para enlazar assets en `preview/a
 
 ```bash
 ./scripts/ci-build.sh
-./test-iso.sh images/metta-os-1.0-amd64.iso
+./test-iso.sh images/metta-os-2.0-amd64.iso
 # o, si la ISO ya existe en el repo:
 ./preview/preview-grub.sh --boot-iso
 ```
@@ -174,7 +184,7 @@ Ejecuta `generate-assets.sh` antes del preview para enlazar assets en `preview/a
 ./scripts/verify-branding.sh chroot/
 
 # Sobre ISO montada
-./scripts/verify-branding.sh '' images/metta-os-1.0-amd64.iso
+./scripts/verify-branding.sh '' images/metta-os-2.0-amd64.iso
 ```
 
 ## Tests QEMU
@@ -185,7 +195,7 @@ Para probar la live **interactivamente** (ventana abierta hasta que la cierres):
 
 ```bash
 chmod +x run-live.sh
-./run-live.sh metta-os-default-amd64/metta-os-1.0-amd64.iso
+./run-live.sh metta-os-default-amd64/metta-os-2.0-amd64.iso
 # Login live: usuario metta, contraseña kali
 ```
 

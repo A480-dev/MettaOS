@@ -8,15 +8,15 @@ CHROOT="$ROOT/chroot"
 DISPLAY_NUM="${DISPLAY_NUM:-1}"
 RES="${PREVIEW_RES:-1600x900}"
 
-if [ ! -d "$CHROOT" ] || [ ! -f "$CHROOT/usr/bin/startxfce4" ] 2>/dev/null; then
+if [ ! -d "$CHROOT" ] || { [ ! -f "$CHROOT/usr/bin/startplasma-x11" ] && [ ! -f "$CHROOT/usr/bin/startplasma-wayland" ]; } 2>/dev/null; then
   echo "Chroot de live-build no encontrado en $CHROOT" >&2
   echo "" >&2
   echo "Opciones:" >&2
   echo "  1) Nivel 0 (instantáneo):  ./preview/preview-html.sh" >&2
   echo "  2) Build chroot en Docker:" >&2
   echo "       docker run --rm --privileged -v \"$ROOT:/build\" -w /build metta-os-builder \\" >&2
-  echo "         -c 'lb config -a amd64 -- --variant xfce-light && lb build_nochroot'" >&2
-  echo "  3) Build ISO completo:       METTA_VARIANT=xfce-light ./scripts/ci-build.sh" >&2
+  echo "         -c 'lb config -a amd64 -- --variant kde-light && lb build_nochroot'" >&2
+  echo "  3) Build ISO completo:       METTA_VARIANT=kde-light ./scripts/ci-build.sh" >&2
   echo "" >&2
   echo "Abriendo mockup HTML como fallback..." >&2
   preview_open "file://$ROOT/preview/mockup.html"
@@ -44,10 +44,13 @@ cleanup() {
 }
 trap cleanup EXIT
 
+PLASMA_START=startplasma-x11
+[ -f "$CHROOT/usr/bin/startplasma-x11" ] || PLASMA_START=startplasma-wayland
+
 sudo systemd-nspawn -D "$CHROOT" \
   --bind=/tmp/.X11-unix \
   --setenv=DISPLAY=":$DISPLAY_NUM" \
-  /bin/bash -lc 'startxfce4' &
+  /bin/bash -lc "$PLASMA_START" &
 
-echo "Escritorio Xfce en Xephyr :$DISPLAY_NUM ($RES)"
+echo "Escritorio Plasma en Xephyr :$DISPLAY_NUM ($RES)"
 wait

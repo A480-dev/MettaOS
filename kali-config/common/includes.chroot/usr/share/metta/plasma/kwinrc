@@ -1,0 +1,15 @@
+[org.kde.kdecoration2]
+library=org.kde.breeze
+theme=Breeze
+
+[Compositing]
+Enabled=true
+Backend=OpenGL
+GLCore=true
+
+[Desktops]
+Number=1
+Rows=1
+
+[Plugins]
+blurEnabled=true

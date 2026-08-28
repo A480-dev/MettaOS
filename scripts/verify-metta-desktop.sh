@@ -1,5 +1,5 @@
 #!/bin/bash
-# Verify METTA OS desktop assets and Xfce defaults are baked into chroot or ISO.
+# Verify METTA OS Plasma desktop assets are baked into chroot or ISO.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -69,26 +69,31 @@ FAILED=0
 resolve_target
 
 check_file usr/share/backgrounds/metta/metta-matrix-with-logo.png "wallpaper METTA" || FAILED=1
-check_file usr/share/themes/Metta-Dark/index.theme "tema Metta-Dark" || FAILED=1
-check_file usr/lib/metta/xfce-live-setup.sh "script de sesión Xfce" || FAILED=1
-check_file etc/xdg/autostart/metta-xfce-setup.desktop "autostart Xfce" || FAILED=1
-check_file etc/xdg/autostart/metta-xfce-setup-delayed.desktop "autostart Xfce retrasado" || FAILED=1
-check_file usr/lib/metta/install-xfce-defaults.sh "instalador Xfce METTA" || FAILED=1
+check_file usr/share/color-schemes/Metta-Dark.colors "esquema de color Metta-Dark" || FAILED=1
+check_file usr/lib/metta/plasma-live-setup.sh "script de sesión Plasma" || FAILED=1
+check_file etc/xdg/autostart/metta-plasma-setup.desktop "autostart Plasma" || FAILED=1
+check_file etc/xdg/autostart/metta-plasma-setup-delayed.desktop "autostart Plasma retrasado" || FAILED=1
+check_file usr/lib/metta/install-plasma-defaults.sh "instalador Plasma METTA" || FAILED=1
+check_file usr/share/plasma/look-and-feel/org.mettaos.desktop/metadata.desktop "look-and-feel METTA" || FAILED=1
+check_file etc/xdg/plasma-org.kde.plasma.desktop-appletsrc "layout panel Plasma" || FAILED=1
 check_file etc/live/config.conf.d/metta.conf "config live metta" || FAILED=1
 
-check_grep etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml \
-  'Metta-Dark' "tema GTK en xsettings" || FAILED=1
-check_grep etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml \
-  'Metta-Dark' "tema xfwm4" || FAILED=1
-check_grep etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml \
-  'metta-matrix-with-logo\.png' "wallpaper en xfce4-desktop" || FAILED=1
-check_grep etc/xdg/gtk-3.0/settings.ini \
-  'Metta-Dark' "tema en gtk-3.0" || FAILED=1
+check_grep etc/xdg/kdeglobals \
+  'Metta-Dark' "esquema de color en kdeglobals" || FAILED=1
+check_grep etc/xdg/plasmarc \
+  'org\.mettaos\.desktop' "look-and-feel METTA en plasmarc" || FAILED=1
+check_grep etc/skel/.config/kdeglobals \
+  'Papirus-Dark' "iconos en skel kdeglobals" || FAILED=1
 check_grep etc/live/config.conf.d/metta.conf \
   'LIVE_USERNAME="metta"' "usuario live metta" || FAILED=1
 
-if grep -q 'Kali-Dark' "$TARGET/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml" 2>/dev/null; then
-  echo "FALLO: xfwm4.xml aún referencia Kali-Dark" >&2
+if grep -q 'Kali-Dark' "$TARGET/etc/xdg/kdeglobals" 2>/dev/null; then
+  echo "FALLO: kdeglobals aún referencia Kali-Dark" >&2
+  FAILED=1
+fi
+
+if grep -q 'org.kde.breeze.desktop' "$TARGET/etc/xdg/plasmarc" 2>/dev/null; then
+  echo "FALLO: plasmarc aún usa look-and-feel Breeze genérico" >&2
   FAILED=1
 fi
 
@@ -96,4 +101,4 @@ if [ "$FAILED" -ne 0 ]; then
   exit 1
 fi
 
-echo "OK: escritorio METTA verificado en la imagen"
+echo "OK: escritorio Plasma METTA verificado en la imagen"

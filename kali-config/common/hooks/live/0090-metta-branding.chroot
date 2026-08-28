@@ -28,8 +28,8 @@ find /usr/share -type f \( -name '*.desktop' -o -name '*.xml' -o -name '*.policy
       "$f" || true
   done
 
-# Xfce about dialog
-if [ -f /usr/share/xfce4/xfconf/xfce-perchannel-xml/xfce4-about.xml ]; then
-  sed -i 's/Kali Linux/METTA OS/g; s/Kali/METTA OS/g' \
-    /usr/share/xfce4/xfconf/xfce-perchannel-xml/xfce4-about.xml || true
+# KDE About / distro branding
+if [ -f /etc/xdg/kcm-about-distrorc ]; then
+  sed -i 's/Kali Linux/METTA OS/g; s/emblem-kali/mettaos/g' \
+    /etc/xdg/kcm-about-distrorc || true
 fi
