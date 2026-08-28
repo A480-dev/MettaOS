@@ -51,6 +51,9 @@ for f in /etc/gtk-2.0/gtkrc \
   [ -f "$f" ] && sed -i 's/Kali-Dark/Metta-Dark/g; s/Kali-Light/Metta-Dark/g' "$f" || true
 done
 
+# Remove Kali color schemes — users only see Metta-Dark
+rm -f /usr/share/color-schemes/Kali*.colors 2>/dev/null || true
+
 # Late pass: kali-themes may have re-run diversions — re-apply METTA Plasma defaults
 if [ -x /usr/lib/metta/install-plasma-defaults.sh ]; then
   /usr/lib/metta/install-plasma-defaults.sh
