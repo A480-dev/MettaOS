@@ -45,9 +45,9 @@ fn write_meta(tmp: &Path, config: &ConvertConfig, app_type: &str) -> Result<(), 
         .map_err(|e| e.to_string())?;
     let compat = serde_json::json!({
         "layer": if app_type == "exe" { "wine" } else { "darling" },
-        "wine_version": if app_type == "exe" { "9.x" } else { null },
+        "wine_version": if app_type == "exe" { serde_json::json!("9.x") } else { serde_json::Value::Null },
         "darling_required": app_type == "app",
-        "min_wine": null
+        "min_wine": serde_json::Value::Null
     });
     fs::write(tmp.join("META/compat.json"), serde_json::to_string_pretty(&compat).unwrap())
         .map_err(|e| e.to_string())?;

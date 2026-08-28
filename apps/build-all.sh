@@ -66,9 +66,58 @@ ensure_app_icons() {
 }
 ensure_app_icons
 
+CACHE_DIR="${METTA_APPS_CACHE_DIR:-$APPS_ROOT/.build-cache}"
+mkdir -p "$CACHE_DIR"
+
+app_source_hash() {
+  local name="$1"
+  local dir="$APPS_ROOT/$name"
+  {
+    sha256sum "$APPS_ROOT/Cargo.toml" "$APPS_ROOT/Cargo.lock" 2>/dev/null || true
+    find "$APPS_ROOT/metta-core" -type f -name '*.rs' 2>/dev/null | sort | xargs sha256sum 2>/dev/null || true
+    find "$dir" \
+      \( -path '*/node_modules/*' -o -path '*/dist/*' -o -path '*/target/*' \) -prune \
+      -o -type f \( -name '*.rs' -o -name '*.ts' -o -name '*.tsx' -o -name '*.json' -o -name 'Cargo.toml' -o -name 'tauri.conf.json' -o -name 'index.html' \) -print \
+      2>/dev/null | sort | xargs sha256sum 2>/dev/null || true
+  } | sha256sum | awk '{print $1}'
+}
+
+find_release_bin() {
+  local name="$1"
+  local dir="$2"
+  local bin="$CARGO_TARGET_DIR/release/$name"
+  [ -f "$bin" ] && { echo "$bin"; return 0; }
+  bin="$CARGO_TARGET_DIR/release/${name//-/_}"
+  [ -f "$bin" ] && { echo "$bin"; return 0; }
+  bin="$dir/src-tauri/target/release/$name"
+  [ -f "$bin" ] && { echo "$bin"; return 0; }
+  bin="$dir/src-tauri/target/release/${name//-/_}"
+  [ -f "$bin" ] && { echo "$bin"; return 0; }
+  return 1
+}
+
+install_cached_app() {
+  local name="$1"
+  local dir="$2"
+  local bin
+  bin="$(find_release_bin "$name" "$dir")" || return 1
+  install -m 755 "$bin" "$DEST/$name"
+}
+
 build_app() {
   local name="$1"
   local dir="$APPS_ROOT/$name"
+  local stamp="$CACHE_DIR/$name.sha256"
+  local hash
+  hash="$(app_source_hash "$name")"
+
+  if [ -f "$stamp" ] && [ "$(tr -d '[:space:]' < "$stamp")" = "$hash" ]; then
+    if install_cached_app "$name" "$dir"; then
+      echo "[build-all] $name (cache hit, skip build)"
+      return 0
+    fi
+  fi
+
   echo "[build-all] $name"
   cd "$dir"
   if [ ! -d node_modules ]; then
@@ -81,6 +130,7 @@ build_app() {
   [ -f "$bin" ] || bin="$dir/src-tauri/target/release/${name//-/_}"
   [ -f "$bin" ] || { echo "FALLO: binario no encontrado para $name" >&2; exit 1; }
   install -m 755 "$bin" "$DEST/$name"
+  printf '%s\n' "$hash" > "$stamp"
 }
 
 for app in "${APPS[@]}"; do

@@ -1,4 +1,4 @@
-use nucleo_matcher::pattern::{AtomKind, CaseMatching, Normalization, Pattern};
+use nucleo_matcher::pattern::{CaseMatching, Normalization, Pattern};
 use nucleo_matcher::{Matcher, Utf32Str};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -79,7 +79,7 @@ fn search(query: String) -> Vec<LaunchItem> {
     }
     let mut matcher = Matcher::new(nucleo_matcher::Config::DEFAULT);
     let mut buf = Vec::<char>::new();
-    let mut pattern = Pattern::parse(&query, CaseMatching::Ignore, Normalization::Smart);
+    let pattern = Pattern::parse(&query, CaseMatching::Ignore, Normalization::Smart);
     for item in &mut items {
         buf.clear();
         let hay = Utf32Str::new(&item.label, &mut buf);

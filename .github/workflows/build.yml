@@ -129,6 +129,23 @@ jobs:
           rm -f images/metta-os-*.iso images/metta-os-*.iso.sha256 images/.metta-build-fingerprint
           echo "Partial cache discarded — full build will run if needed"
 
+      - name: Apps build fingerprint
+        id: appskey
+        run: |
+          chmod +x scripts/apps-build-fingerprint.sh
+          echo "hash=$(./scripts/apps-build-fingerprint.sh)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Tauri apps cache
+        uses: actions/cache@v4
+        id: apps-cache
+        with:
+          path: |
+            apps/target
+            apps/.build-cache
+          key: metta-apps-${{ steps.appskey.outputs.hash }}
+          restore-keys: |
+            metta-apps-
+
       - name: CI build pipeline
         env:
           METTA_VARIANT: ${{ steps.cfg.outputs.variant }}
@@ -143,6 +160,15 @@ jobs:
         run: |
           chmod +x scripts/*.sh lb-build.sh test-iso.sh
           ./scripts/ci-build.sh
+
+      - name: Save Tauri apps cache
+        if: always() && steps.apps-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            apps/target
+            apps/.build-cache
+          key: metta-apps-${{ steps.appskey.outputs.hash }}
 
       - name: Save ISO cache
         if: success() && steps.iso-cache.outputs.cache-hit != 'true'

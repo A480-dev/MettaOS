@@ -1,5 +1,3 @@
-use tauri::Manager;
-
 #[tauri::command]
 fn app_info() -> String {
     format!("METTA Notify v2.0.0 — METTA OS")

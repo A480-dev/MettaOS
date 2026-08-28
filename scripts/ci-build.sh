@@ -120,8 +120,8 @@ fi
 if [ "${METTA_BUILD_APPS:-1}" = "1" ]; then
   log "Building METTA Tauri apps..."
   docker_run "cd apps && ./build-all.sh"
-  log "Cleaning Tauri build caches to free disk for live-build..."
-  docker_run "rm -rf apps/target apps/*/src-tauri/target apps/*/node_modules apps/*/dist"
+  log "Cleaning Tauri frontend caches to free disk for live-build..."
+  docker_run "rm -rf apps/*/node_modules apps/*/dist"
 else
   log "Skipping Tauri apps (METTA_BUILD_APPS=0). Stubs will be used in ISO."
 fi
