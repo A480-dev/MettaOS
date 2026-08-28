@@ -21,7 +21,7 @@ e2fsprogs
 grub-efi-amd64-bin
 grub-pc-bin
 efibootmgr
-policykit-1
+polkitd
 pkexec
 nmap
 wireguard-tools
